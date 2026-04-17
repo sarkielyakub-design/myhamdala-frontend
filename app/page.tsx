@@ -85,7 +85,7 @@ const getBotReply = (input: string) => {
   ]);
   const [input, setInput] = useState("");
 
-  const BASE_URL = "http://127.0.0.1:8000";
+  const BASE_URL = "https://travel-backend-oo52.onrender.com";
 
   const getImage = (path: string | null) => {
     if (!path) return "/images/makkah.jpg";
@@ -126,12 +126,17 @@ const getBotReply = (input: string) => {
 
  // 🔥 FETCH PACKAGES
 useEffect(() => {
-  API.get("/packages/")
-    .then((res) => setPackages(res.data))
-    .catch(() => setError("Failed to load packages"))
+  API.get("/packages")
+    .then((res) => {
+      console.log("PACKAGES:", res.data); // 🔥 DEBUG
+      setPackages(res.data || []);
+    })
+    .catch((err) => {
+      console.error(err);
+      setError("Failed to load packages");
+    })
     .finally(() => setLoading(false));
 }, []);
-
 // 🔥 AUTO CITY SUGGESTION (PUT HERE ✅)
 useEffect(() => {
   const cities = [

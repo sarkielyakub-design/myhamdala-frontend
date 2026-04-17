@@ -25,10 +25,10 @@ export default function Login() {
       // 🔐 SAVE TOKEN
       localStorage.setItem("token", res.data.access_token);
 
-      // 🔥 SAVE USER (VERY IMPORTANT)
+      // 👤 SAVE USER
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      // 🚀 ROLE-BASED REDIRECT
+      // 🚀 REDIRECT BASED ON ROLE
       if (res.data.user.role === "admin") {
         window.location.href = "/admin";
       } else {
@@ -38,11 +38,17 @@ export default function Login() {
     } catch (err: any) {
       console.error(err);
 
-      if (err.response?.status === 401) {
+      // 🔥 BETTER ERROR HANDLING
+      if (err.response?.data?.detail === "Account not verified") {
+        alert("Please verify your account via OTP 📩");
+      } else if (err.response?.status === 401) {
         alert("Invalid email or password ❌");
+      } else if (err.response?.status === 403) {
+        alert("Access denied ❌");
       } else {
         alert("Something went wrong ⚠️");
       }
+
     } finally {
       setLoading(false);
     }
@@ -65,12 +71,17 @@ export default function Login() {
       {/* 🧊 LOGIN CARD */}
       <div className="relative z-10 w-full max-w-sm p-8 rounded-2xl bg-white/10 backdrop-blur-2xl border border-white/10 shadow-2xl">
 
+        {/* 🏷️ BRAND */}
+        <h2 className="text-center text-yellow-400 font-semibold text-sm mb-1 tracking-wide">
+          M.Y HAMDALA TRAVEL & TOUR
+        </h2>
+
         <h1 className="text-3xl font-bold mb-2 text-center">
           Welcome Back
         </h1>
 
         <p className="text-gray-300 text-sm text-center mb-6">
-          Login to continue your journey 🕋
+          Continue your spiritual journey 🕋
         </p>
 
         {/* EMAIL */}
@@ -98,15 +109,18 @@ export default function Login() {
         >
           {loading ? "Logging in..." : "Login 🚀"}
         </button>
-<p className="text-center text-sm text-gray-300 mt-4">
-  Don’t have an account?{" "}
-  <a href="/register" className="text-yellow-400 hover:underline">
-    Create one
-  </a>
-</p>
+
+        {/* REGISTER */}
+        <p className="text-center text-sm text-gray-300 mt-4">
+          Don’t have an account?{" "}
+          <a href="/register" className="text-yellow-400 hover:underline">
+            Create one
+          </a>
+        </p>
+
         {/* FOOTER */}
-        <p className="text-center text-gray-400 text-sm mt-4">
-          Secure access • Maitagaran Travel
+        <p className="text-center text-gray-400 text-xs mt-6">
+          Powered by M.Y Hamdala • Secure Login
         </p>
       </div>
     </div>
