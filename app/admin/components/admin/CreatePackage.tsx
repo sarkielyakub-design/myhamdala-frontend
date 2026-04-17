@@ -105,7 +105,7 @@ export default function CreatePackage({ onCreated }: any) {
 
     // 🚀 REQUEST
     const res = await fetch(
-  "http://127.0.0.1:8000/api/v1/admin/packages",
+ "https://travel-backend-oo52.onrender.com/api/v1/admin/packages",
   {
     method: "POST",
     headers: {
