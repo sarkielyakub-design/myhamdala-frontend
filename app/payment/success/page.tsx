@@ -1,83 +1,49 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import API from "@/lib/api";
-
-export default function Page() {
-  const params = useSearchParams();
-  const reference = params.get("reference");
-
-  const [status, setStatus] = useState<"loading" | "success" | "failed">("loading");
-
-  useEffect(() => {
-    if (!reference) {
-      setStatus("failed");
-      return;
-    }
-
-    const verifyPayment = async () => {
-      try {
-        await API.get(`/bookings/verify/${reference}`);
-        setStatus("success");
-      } catch (err) {
-        console.error(err);
-        setStatus("failed");
-      }
-    };
-
-    verifyPayment();
-  }, [reference]);
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { reference?: string };
+}) {
+  const reference = searchParams?.reference;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0B0F19] text-white px-6">
       <div className="max-w-md w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-10 text-center">
 
-        {status === "loading" && (
+        {!reference && (
           <>
-            <h1 className="text-2xl mb-4">🔄 Verifying Payment...</h1>
-            <p className="text-gray-400">Please wait</p>
+            <h1 className="text-3xl text-red-400 mb-4">
+              ❌ Invalid Payment
+            </h1>
+            <p className="text-gray-300">Missing reference</p>
           </>
         )}
 
-        {status === "success" && (
+        {reference && (
           <>
-            <h1 className="text-3xl font-bold text-green-400 mb-4">
-              ✅ Payment Successful
+            <h1 className="text-3xl text-yellow-400 mb-4">
+              ⏳ Processing Payment...
             </h1>
 
-            <p className="text-gray-300 mb-6">
-              Your booking has been confirmed.
+            <p className="text-gray-400 mb-6">
+              Please wait while we confirm your booking
             </p>
 
-            <a
-              href="/"
-              className="bg-yellow-500 text-black px-6 py-3 rounded-lg font-semibold"
-            >
-              Go Home
-            </a>
+            {/* SIMPLE CLIENT SIDE SCRIPT */}
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  fetch("https://travel-backend-oo52.onrender.com/api/v1/bookings/verify/${reference}")
+                    .then(() => {
+                      document.body.innerHTML = "<h1 style='color:green;text-align:center;margin-top:40vh;'>✅ Payment Successful</h1>";
+                    })
+                    .catch(() => {
+                      document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:40vh;'>❌ Payment Failed</h1>";
+                    });
+                `,
+              }}
+            />
           </>
         )}
-
-        {status === "failed" && (
-          <>
-            <h1 className="text-3xl font-bold text-red-400 mb-4">
-              ❌ Payment Failed
-            </h1>
-
-            <p className="text-gray-300 mb-6">
-              Invalid or missing payment reference.
-            </p>
-
-            <a
-              href="/"
-              className="bg-red-500 px-6 py-3 rounded-lg font-semibold"
-            >
-              Try Again
-            </a>
-          </>
-        )}
-
       </div>
     </div>
   );
