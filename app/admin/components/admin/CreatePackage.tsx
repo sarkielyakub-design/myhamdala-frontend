@@ -62,6 +62,7 @@ export default function CreatePackage({ onCreated }: any) {
       return;
     }
 
+    // 🔥 SAFE DATA (NO MORE 422 EVER)
     const safeForm = {
       title: form.title?.trim() || "Untitled Package",
       description: form.description?.trim() || "No description",
@@ -86,67 +87,108 @@ export default function CreatePackage({ onCreated }: any) {
 
     const formData = new FormData();
 
+    // ✅ APPEND ALL FIELDS CLEANLY
     Object.entries(safeForm).forEach(([key, value]) => {
       formData.append(key, String(value));
     });
 
+    // 📸 FILE
     if (images.length > 0) {
       formData.append("file", images[0]);
     }
 
-    // ✅ USE REAL BACKEND
+    // 🔍 DEBUG (VERY IMPORTANT)
+    console.log("🔥 FINAL FORM DATA:");
+    for (let [k, v] of formData.entries()) {
+      console.log(k, v);
+    }
+
+    // 🚀 REQUEST
     const res = await fetch(
-      "https://travel-backend-oo52.onrender.com/api/v1/admin/packages",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      }
+ "https://travel-backend-oo52.onrender.com/api/v1/admin/packages",
+  {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  }
+);
+
+let data: any = {};
+
+try {
+  data = await res.json();
+} catch (e) {
+  console.warn("⚠️ Response is not JSON");
+}
+
+if (!res.ok) {
+  console.error("🔥 BACKEND ERROR:", data);
+
+  // 🔐 AUTH ERROR
+  if (res.status === 401) {
+    alert("Session expired. Login again.");
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+    return;
+  }
+
+  // 🧠 VALIDATION ERROR (422)
+  if (res.status === 422) {
+    alert(
+      data?.detail
+        ? JSON.stringify(data.detail, null, 2)
+        : "Validation error (422)"
     );
+    return;
+  }
 
-    let data: any = {};
+  // ❌ OTHER ERRORS
+  alert(data?.detail || "Request failed");
+  return;
+}
 
-    try {
-      data = await res.json();
-    } catch {
-      console.warn("⚠️ Not JSON response");
-    }
+// ✅ SUCCESS
+alert("✅ Package Created Successfully");
 
-    if (!res.ok) {
-      console.error("🔥 BACKEND ERROR:", data);
+// 🔄 RESET FORM
+setForm(initialForm);
+setImages([]);
+setPreviews([]);
 
-      if (res.status === 401) {
-        alert("Session expired. Login again.");
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-        return;
-      }
-
-      if (res.status === 422) {
-        alert(JSON.stringify(data.detail, null, 2));
-        return;
-      }
-
-      alert(data?.detail || "Request failed ❌");
-      return;
-    }
-
-    alert("✅ Package Created Successfully");
-
+// 🔄 REFRESH LIST
+onCreated && onCreated();  // 🔄 RESET FORM
     setForm(initialForm);
     setImages([]);
     setPreviews([]);
 
+    // 🔄 REFRESH LIST
     onCreated && onCreated();
 
   } catch (err: any) {
-    console.log("🔥 FULL ERROR:", err);
-    alert("❌ Network or server error");
-  } finally {
-    setLoading(false);
+  console.log("🔥 FULL ERROR:", err);
+
+  // 🔥 HANDLE FASTAPI VALIDATION ERRORS PROPERLY
+  if (err?.detail && Array.isArray(err.detail)) {
+    const messages = err.detail
+      .map((e: any) => {
+        const field = e.loc?.join(" → ") || "field";
+        return `❌ ${field}: ${e.msg}`;
+      })
+      .join("\n");
+
+    alert(messages);
+  } else if (err?.detail) {
+    // 🔥 NORMAL ERROR STRING
+    alert(`❌ ${err.detail}`);
+  } else {
+    alert("❌ Something went wrong");
   }
+}
+finally {
+  setLoading(false);
+}
 };
   return (
     <div className="bg-[#121826] p-6 rounded-2xl mb-8 border border-white/10 shadow-lg space-y-6">
