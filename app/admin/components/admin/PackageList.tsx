@@ -41,7 +41,7 @@ export default function PackageList({
             {/* 🖼 IMAGE */}
             <div className="relative">
               <img
-                src={`http://127.0.0.1:8000${p.image_url}`}
+                src={`const BASE_URL = "https://travel-backend-oo52.onrender.com";{p.image_url}`}
                 className="h-44 w-full object-cover"
               />
 

@@ -129,7 +129,7 @@ useEffect(() => {
   API.get("/packages")
     .then((res) => {
       console.log("PACKAGES:", res.data); // 🔥 DEBUG
-      setPackages(res.data || []);
+      setPackages(res.data.data || res.data);
     })
     .catch((err) => {
       console.error(err);
