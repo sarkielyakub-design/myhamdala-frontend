@@ -47,7 +47,7 @@ export default function CreatePackage({ onCreated }: any) {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // 🚀 CREATE PACKAGE
+  /// 🚀 CREATE PACKAGE
   const createPackage = async (e?: any) => {
   e?.preventDefault();
 
