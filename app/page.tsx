@@ -126,22 +126,46 @@ const getBotReply = (input: string) => {
 
  // 🔥 FETCH PACKAGES
 useEffect(() => {
-  API.get("/packages")
-    .then((res) => {
-      console.log("PACKAGES:", res.data); // 🔥 DEBUG
-      setPackages(res.data.data || res.data);
-    })
-    .catch((err) => {
-      console.error(err);
+  const fetchPackages = async () => {
+    try {
+      const res = await API.get("/packages");
+
+      console.log("🔥 PACKAGES RAW:", res.data);
+
+      let safeData: any[] = [];
+
+      if (Array.isArray(res.data)) {
+        safeData = res.data;
+      } else if (Array.isArray(res.data?.data)) {
+        safeData = res.data.data;
+      } else if (Array.isArray(res.data?.packages)) {
+        safeData = res.data.packages;
+      } else if (Array.isArray(res.data?.results)) {
+        safeData = res.data.results;
+      } else {
+        console.error("❌ NOT ARRAY:", res.data);
+        safeData = [];
+      }
+
+      setPackages(safeData);
+    } catch (err) {
+      console.error("❌ FETCH ERROR:", err);
+      setPackages([]);
       setError("Failed to load packages");
-    })
-    .finally(() => setLoading(false));
-}, []);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPackages();
+}, []);   
 // 🔥 AUTO CITY SUGGESTION (PUT HERE ✅)
 useEffect(() => {
+  const safePackages = Array.isArray(packages) ? packages : [];
+
   const cities = [
     ...new Set(
-      packages
+      safePackages
         .map((p) => p.flight_from)
         .filter(Boolean)
     ),
@@ -153,45 +177,49 @@ useEffect(() => {
     )
   );
 }, [cityInput, packages]);
-  const handleBooking = (id: number) => {
-    const token = localStorage.getItem("token");
-    if (!token) return (window.location.href = "/login");
-    window.location.href = `/booking/${id}`;
-  };
+  
+ const handleBooking = (id: number) => {
+  const token = localStorage.getItem("token");
 
-  // ✅ FILTER LOGIC
-const filteredPackages = packages.filter((pkg) => {
-  // TYPE
-  if (
-    filterType !== "all" &&
-    !pkg.title?.toLowerCase().includes(filterType)
-  ) return false;
-
-  // CATEGORY
-  if (
-    filterCategory !== "all" &&
-    pkg.category &&
-    pkg.category.toLowerCase() !== filterCategory
-  ) return false;
-
-  // PRICE
-  if (pkg.price && Number(pkg.price) > price) return false;
-
-  // DATE (SAFE)
-  if (date && pkg.departure_date) {
-    if (!pkg.departure_date.includes(date)) return false;
+  if (!token) {
+    window.location.href = "/login";
+    return;
   }
 
-  // CITY (SAFE)
-  if (
-    city !== "all" &&
-    pkg.flight_from &&
-    !pkg.flight_from.toLowerCase().includes(city.toLowerCase())
-  ) return false;
+  window.location.href = `/booking/${id}`;
+};
+  // ✅ FILTER LOGIC
+const filteredPackages = (Array.isArray(packages) ? packages : []).filter(
+  (pkg) => {
+    if (
+      filterType !== "all" &&
+      !pkg.title?.toLowerCase().includes(filterType)
+    )
+      return false;
 
-  return true;
-});
-  // 💬 CHATBOT
+    if (
+      filterCategory !== "all" &&
+      pkg.category &&
+      pkg.category.toLowerCase() !== filterCategory
+    )
+      return false;
+
+    if (pkg.price && Number(pkg.price) > price) return false;
+
+    if (date && pkg.departure_date) {
+      if (!pkg.departure_date.includes(date)) return false;
+    }
+
+    if (
+      city !== "all" &&
+      pkg.flight_from &&
+      !pkg.flight_from.toLowerCase().includes(city.toLowerCase())
+    )
+      return false;
+
+    return true;
+  }
+);  // 💬 CHATBOT
   const sendMessage = () => {
   if (!input.trim()) return;
 
@@ -201,7 +229,7 @@ const filteredPackages = packages.filter((pkg) => {
   setTimeout(() => {
     setMessages((prev) => [
       ...prev,
-      { from: "bot", text: getBotReply(input) }, // ✅ FIXED
+      { from: "bot", text: getBotReply(input) },
     ]);
   }, 500);
 
