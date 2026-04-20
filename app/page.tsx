@@ -22,6 +22,7 @@ const histogram = priceGroups.map((range, i) => {
 
   return { label: `₦${range / 1000000}M`, count };
 });
+
   const [lang, setLang] = useState<Lang>("en");
   const [videoError, setVideoError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -153,12 +154,12 @@ useEffect(() => {
       setPackages([]);
       setError("Failed to load packages");
     } finally {
-      setLoading(false);
+      setLoading(false); // ✅ NOW SAFE
     }
   };
 
   fetchPackages();
-}, []);   
+}, []);
 // 🔥 AUTO CITY SUGGESTION (PUT HERE ✅)
 useEffect(() => {
   const safePackages = Array.isArray(packages) ? packages : [];
@@ -189,37 +190,37 @@ useEffect(() => {
   window.location.href = `/booking/${id}`;
 };
   // ✅ FILTER LOGIC
-const filteredPackages = (Array.isArray(packages) ? packages : []).filter(
-  (pkg) => {
-    if (
-      filterType !== "all" &&
-      !pkg.title?.toLowerCase().includes(filterType)
-    )
-      return false;
+const filteredPackages = (packages || []).filter((pkg) => {
+  if (!pkg) return false;
 
-    if (
-      filterCategory !== "all" &&
-      pkg.category &&
-      pkg.category.toLowerCase() !== filterCategory
-    )
-      return false;
+  // TYPE
+  if (
+    filterType !== "all" &&
+    !(pkg.title || "").toLowerCase().includes(filterType)
+  ) return false;
 
-    if (pkg.price && Number(pkg.price) > price) return false;
+  // CATEGORY
+  if (
+    filterCategory !== "all" &&
+    (pkg.category || "").toLowerCase() !== filterCategory
+  ) return false;
 
-    if (date && pkg.departure_date) {
-      if (!pkg.departure_date.includes(date)) return false;
-    }
+  // PRICE
+  if (Number(pkg.price || 0) > price) return false;
 
-    if (
-      city !== "all" &&
-      pkg.flight_from &&
-      !pkg.flight_from.toLowerCase().includes(city.toLowerCase())
-    )
-      return false;
-
-    return true;
+  // DATE
+  if (date && pkg.departure_date) {
+    if (!pkg.departure_date.includes(date)) return false;
   }
-);  // 💬 CHATBOT
+
+  // CITY
+  if (
+    city !== "all" &&
+    !(pkg.flight_from || "").toLowerCase().includes(city.toLowerCase())
+  ) return false;
+
+  return true;
+});  // 💬 CHATBOT
   const sendMessage = () => {
   if (!input.trim()) return;
 
