@@ -13,7 +13,7 @@ const [packages, setPackages] = useState<any[]>([]);
 const [price, setPrice] = useState(10_000_000);
 
 // ✅ ALWAYS SAFE ARRAY (ONLY ONCE!)
-const safePackages = Array.isArray(packages) ? packages : [];
+
 
 // ✅ PRICE RANGES
 const priceGroups = [
