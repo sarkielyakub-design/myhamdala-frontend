@@ -60,13 +60,24 @@ export default function AdminDashboard() {
       ]);
 
       // 📦 PACKAGES
-      if (pkgRes.status === "fulfilled") {
-        setPackages(safeData(pkgRes.value, []));
-      } else {
-        console.error("❌ Packages error:", pkgRes.reason);
-        setPackages([]);
-      }
+      useEffect(() => {
+  const fetchPackages = async () => {
+    try {
+      const res = await API.get("/packages");
 
+      console.log("🔥 RAW:", res.data);
+
+      // ✅ FIX HERE
+      setPackages(res.data.data || []);
+
+    } catch (err) {
+      console.error(err);
+      setPackages([]);
+    }
+  };
+
+  fetchPackages();
+}, []);
       // 📘 BOOKINGS
       if (bookRes.status === "fulfilled") {
         setBookings(safeData(bookRes.value, []));
