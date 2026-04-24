@@ -7,23 +7,38 @@ type Lang = "en" | "ar" | "ha";
 
 export default function Home() {
   // ✅ STATES
+
+// ✅ STATE
 const [packages, setPackages] = useState<any[]>([]);
-const [price, setPrice] = useState(10000000);
+const [price, setPrice] = useState(10_000_000);
 
-// ✅ PRICE HISTOGRAM (PUT HERE)
-const priceGroups = [0, 2000000, 4000000, 6000000, 8000000, 10000000];
+// ✅ ALWAYS SAFE ARRAY (ONLY ONCE!)
+const safePackages = Array.isArray(packages) ? packages : [];
 
-const histogram = priceGroups.map((range, i) => {
-  const next = priceGroups[i + 1] || Infinity;
+// ✅ PRICE RANGES
+const priceGroups = [
+  0,
+  2_000_000,
+  4_000_000,
+  6_000_000,
+  8_000_000,
+  10_000_000,
+];
 
-  const count = packages.filter(
-    (p) => p.price >= range && p.price < next
-  ).length;
+// ✅ HISTOGRAM
+const histogram = priceGroups.map((min, index) => {
+  const max = priceGroups[index + 1] ?? Infinity;
 
-  return { label: `₦${range / 1000000}M`, count };
-});
+  const count = safePackages.reduce((acc, pkg) => {
+    const price = Number(pkg?.price ?? 0);
+    return price >= min && price < max ? acc + 1 : acc;
+  }, 0);
 
-  const [lang, setLang] = useState<Lang>("en");
+  return {
+    label: `₦${min / 1_000_000}M`,
+    count,
+  };
+});  const [lang, setLang] = useState<Lang>("en");
   const [videoError, setVideoError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
