@@ -129,45 +129,38 @@ const getBotReply = (input: string) => {
 useEffect(() => {
   const fetchPackages = async () => {
     try {
+      setLoading(true);
+
       const res = await API.get("/packages");
 
-      console.log("🔥 PACKAGES RAW:", res.data);
+      console.log("🔥 RAW:", res.data);
 
-      let safeData: any[] = [];
-
-      if (Array.isArray(res.data)) {
-        safeData = res.data;
-      } else if (Array.isArray(res.data?.data)) {
-        safeData = res.data.data;
-      } else if (Array.isArray(res.data?.packages)) {
-        safeData = res.data.packages;
-      } else if (Array.isArray(res.data?.results)) {
-        safeData = res.data.results;
-      } else {
-        console.error("❌ NOT ARRAY:", res.data);
-        safeData = [];
-      }
+      const safeData = Array.isArray(res.data?.data)
+        ? res.data.data
+        : [];
 
       setPackages(safeData);
+
     } catch (err) {
       console.error("❌ FETCH ERROR:", err);
       setPackages([]);
       setError("Failed to load packages");
     } finally {
-      setLoading(false); // ✅ NOW SAFE
+      setLoading(false);
     }
   };
 
   fetchPackages();
-}, []);
-// 🔥 AUTO CITY SUGGESTION (PUT HERE ✅)
-useEffect(() => {
-  const safePackages = Array.isArray(packages) ? packages : [];
+}, []);// 🔥 AUTO CITY SUGGESTION (PUT HERE ✅)
+// ✅ SAFE PACKAGES
+const safePackages = Array.isArray(packages) ? packages : [];
 
+// 🔥 AUTO CITY SUGGESTION
+useEffect(() => {
   const cities = [
     ...new Set(
       safePackages
-        .map((p) => p.flight_from)
+        .map((p) => p?.flight_from)
         .filter(Boolean)
     ),
   ];
@@ -177,9 +170,10 @@ useEffect(() => {
       c.toLowerCase().includes(cityInput.toLowerCase())
     )
   );
-}, [cityInput, packages]);
-  
- const handleBooking = (id: number) => {
+}, [cityInput, safePackages]);
+
+// 🚀 BOOKING
+const handleBooking = (id: number) => {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -189,38 +183,46 @@ useEffect(() => {
 
   window.location.href = `/booking/${id}`;
 };
-  // ✅ FILTER LOGIC
-const filteredPackages = (packages || []).filter((pkg) => {
+
+// ✅ FILTER LOGIC (FULL SAFE)
+const filteredPackages = safePackages.filter((pkg) => {
   if (!pkg) return false;
 
+  const title = (pkg.title || "").toLowerCase();
+  const category = (pkg.category || "").toLowerCase();
+  const flightFrom = (pkg.flight_from || "").toLowerCase();
+  const pkgPrice = Number(pkg.price || 0);
+
   // TYPE
-  if (
-    filterType !== "all" &&
-    !(pkg.title || "").toLowerCase().includes(filterType)
-  ) return false;
+  if (filterType !== "all" && !title.includes(filterType.toLowerCase())) {
+    return false;
+  }
 
   // CATEGORY
-  if (
-    filterCategory !== "all" &&
-    (pkg.category || "").toLowerCase() !== filterCategory
-  ) return false;
+  if (filterCategory !== "all" && category !== filterCategory.toLowerCase()) {
+    return false;
+  }
 
   // PRICE
-  if (Number(pkg.price || 0) > price) return false;
+  if (pkgPrice > price) {
+    return false;
+  }
 
   // DATE
   if (date && pkg.departure_date) {
-    if (!pkg.departure_date.includes(date)) return false;
+    if (!pkg.departure_date.includes(date)) {
+      return false;
+    }
   }
 
   // CITY
-  if (
-    city !== "all" &&
-    !(pkg.flight_from || "").toLowerCase().includes(city.toLowerCase())
-  ) return false;
+  if (city !== "all" && !flightFrom.includes(city.toLowerCase())) {
+    return false;
+  }
 
   return true;
-});  // 💬 CHATBOT
+});
+  // 💬 CHATBOT
   const sendMessage = () => {
   if (!input.trim()) return;
 

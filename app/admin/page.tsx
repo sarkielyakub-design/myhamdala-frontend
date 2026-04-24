@@ -53,18 +53,12 @@ export default function AdminDashboard() {
       }
 
       // 🔥 SAFE PARALLEL CALLS (NO FULL CRASH)
-      const fetchData = async () => {
-  try {
-    const [bookingsRes, analyticsRes] = await Promise.all([
-      API.get("/admin/bookings"),
-      API.get("/admin/analytics"),
-    ]);
+      const [pkgRes, bookRes, analyticsRes] = await Promise.allSettled([
+        API.get("/admin/packages"),
+        API.get("/admin/bookings"),
+        API.get("/admin/analytics"),
+      ]);
 
-    console.log(bookingsRes.data, analyticsRes.data);
-  } catch (err) {
-    console.error(err);
-  }
-};
       // 📦 PACKAGES
       useEffect(() => {
   const fetchPackages = async () => {
