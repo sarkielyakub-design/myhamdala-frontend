@@ -29,7 +29,7 @@ const priceGroups = [
 const histogram = priceGroups.map((min, index) => {
   const max = priceGroups[index + 1] ?? Infinity;
 
-  const count = safePackages.reduce((acc, pkg) => {
+  const count = packages.reduce((acc, pkg) => {
     const price = Number(pkg?.price ?? 0);
     return price >= min && price < max ? acc + 1 : acc;
   }, 0);
