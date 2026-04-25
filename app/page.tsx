@@ -147,14 +147,14 @@ useEffect(() => {
     } catch (err) {
       console.error("❌ FETCH ERROR:", err);
       setPackages([]);
-      setError("Failed to load packages");
     } finally {
       setLoading(false);
     }
   };
 
   fetchPackages();
-}, []);// 🔥 AUTO CITY SUGGESTION (PUT HERE ✅)
+}, []);
+// 🔥 AUTO CITY SUGGESTION (PUT HERE ✅)
 // ✅ SAFE PACKAGES
 const safePackages = Array.isArray(packages) ? packages : [];
 
