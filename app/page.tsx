@@ -12,20 +12,8 @@ export default function Home() {
 const [packages, setPackages] = useState<any[]>([]);
 const [price, setPrice] = useState(10_000_000);
 
-// ✅ ALWAYS SAFE ARRAY (ONLY ONCE!)
+const priceGroups = [0, 2_000_000, 4_000_000, 6_000_000, 8_000_000, 10_000_000];
 
-
-// ✅ PRICE RANGES
-const priceGroups = [
-  0,
-  2_000_000,
-  4_000_000,
-  6_000_000,
-  8_000_000,
-  10_000_000,
-];
-
-// ✅ HISTOGRAM
 const histogram = priceGroups.map((min, index) => {
   const max = priceGroups[index + 1] ?? Infinity;
 
@@ -38,7 +26,7 @@ const histogram = priceGroups.map((min, index) => {
     label: `₦${min / 1_000_000}M`,
     count,
   };
-});  const [lang, setLang] = useState<Lang>("en");
+}); const [lang, setLang] = useState<Lang>("en");
   const [videoError, setVideoError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
