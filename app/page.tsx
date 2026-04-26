@@ -4,29 +4,32 @@ import { useEffect, useState } from "react";
 import API from "@/lib/api";
 
 type Lang = "en" | "ar" | "ha";
-
 export default function Home() {
-  // ✅ STATES
 
-// ✅ STATE
-const [packages, setPackages] = useState<any[]>([]);
-const [price, setPrice] = useState(10_000_000);
+  // ✅ STATES FIRST
+  const [packages, setPackages] = useState<any[]>([]);
+  const [price, setPrice] = useState(10_000_000);
 
-const priceGroups = [0, 2_000_000, 4_000_000, 6_000_000, 8_000_000, 10_000_000];
+  // ✅ ADD IT HERE (ONLY ONCE)
+  const safePackages = Array.isArray(packages) ? packages : [];
 
-const histogram = priceGroups.map((min, index) => {
-  const max = priceGroups[index + 1] ?? Infinity;
+  // ✅ NOW USE IT BELOW
+  const priceGroups = [0, 2_000_000, 4_000_000, 6_000_000, 8_000_000, 10_000_000];
 
-  const count = packages.reduce((acc, pkg) => {
-    const price = Number(pkg?.price ?? 0);
-    return price >= min && price < max ? acc + 1 : acc;
-  }, 0);
+  const histogram = priceGroups.map((min, index) => {
+    const max = priceGroups[index + 1] ?? Infinity;
 
-  return {
-    label: `₦${min / 1_000_000}M`,
-    count,
-  };
-}); const [lang, setLang] = useState<Lang>("en");
+    const count = safePackages.reduce((acc, pkg) => {
+      const price = Number(pkg?.price ?? 0);
+      return price >= min && price < max ? acc + 1 : acc;
+    }, 0);
+
+    return {
+      label: `₦${min / 1_000_000}M`,
+      count,
+    };
+  });
+ const [lang, setLang] = useState<Lang>("en");
   const [videoError, setVideoError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -154,9 +157,7 @@ useEffect(() => {
 
   fetchPackages();
 }, []);
-// 🔥 AUTO CITY SUGGESTION (PUT HERE ✅)
-// ✅ SAFE PACKAGES
-const safePackages = Array.isArray(packages) ? packages : [];
+
 
 // 🔥 AUTO CITY SUGGESTION
 useEffect(() => {
