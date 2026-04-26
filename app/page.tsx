@@ -18,12 +18,10 @@ export default function Home() {
 
   const histogram = priceGroups.map((range, i) => {
   const next = priceGroups[i + 1] || Infinity;
-
-  const count = (Array.isArray(packages) ? packages : []).filter((p) => {
-    const price = Number(p?.price || 0);
-    return price >= range && price < next;
-  }).length;
-
+const count = safePackages.filter(
+  (p) => Number(p?.price || 0) >= range &&
+         Number(p?.price || 0) < next
+).length;
   return {
     label: `₦${range / 1000000}M`,
     count,
@@ -46,8 +44,8 @@ export default function Home() {
 const [filterCategory, setFilterCategory] = useState("all");
 
 
-const recommendedPackages = packages
-  .filter((p) => p.price <= price) // match user budget
+const recommendedPackages = safePackages
+  .filter((p) => Number(p?.price || 0) <= price)// match user budget
   .sort((a, b) => (b.rating || 4.5) - (a.rating || 4.5)) // best first
   .slice(0, 3);
 const [cityInput, setCityInput] = useState("");
