@@ -12,6 +12,10 @@ export default function Home() {
 
   // ✅ ADD IT HERE (ONLY ONCE)
   const safePackages = Array.isArray(packages) ? packages : [];
+  if (!Array.isArray(safePackages)) {
+  console.error("🚨 packages corrupted:", packages);
+  console.log("🧠 DEBUG SAFE PACKAGES:", safePackages);
+}
 
   // ✅ NOW USE IT BELOW
   const priceGroups = [0, 2_000_000, 4_000_000, 6_000_000, 8_000_000, 10_000_000];
@@ -92,12 +96,14 @@ const getBotReply = (input: string) => {
 
   const BASE_URL = "https://travel-backend-oo52.onrender.com";
 
-  const getImage = (path: string | null) => {
-    if (!path) return "/images/makkah.jpg";
-    if (path.startsWith("http")) return path;
-    return `${BASE_URL}${path}`;
-  };
+const getImage = (path: string | null) => {
+  if (!path) return "/images/makkah.jpg";
 
+  if (path.startsWith("http")) return path;
+
+  // ❌ REMOVE 127.0.0.1
+  return `https://travel-backend-oo52.onrender.com${path}`;
+};
   const t = {
     en: {
       hero: "M.Y HAMDALA TRAVEL&TOUR  Experience the Spiritual Journey",
@@ -135,32 +141,32 @@ useEffect(() => {
 
       const res = await API.get("/packages");
 
-      console.log("🔥 RAW:", res.data);
+      console.log("🔥 RAW RESPONSE:", res);
 
       let safeData: any[] = [];
 
-      // ✅ HANDLE ALL CASES
-      if (Array.isArray(res.data)) {
+      // ✅ HARD GUARANTEE ARRAY
+      if (Array.isArray(res?.data)) {
         safeData = res.data;
-      } else if (Array.isArray(res.data?.data)) {
+      } else if (Array.isArray(res?.data?.data)) {
         safeData = res.data.data;
-      } else if (Array.isArray(res.data?.packages)) {
-        safeData = res.data.packages;
-      } else if (Array.isArray(res.data?.results)) {
-        safeData = res.data.results;
       } else {
-        console.error("❌ NOT ARRAY:", res.data);
+        console.error("❌ BAD RESPONSE SHAPE:", res?.data);
         safeData = [];
       }
 
-      console.log("✅ FINAL ARRAY:", safeData);
+      // 🔒 FINAL PROTECTION
+      if (!Array.isArray(safeData)) {
+        safeData = [];
+      }
+
+      console.log("✅ FINAL SAFE ARRAY:", safeData);
 
       setPackages(safeData);
 
     } catch (err) {
       console.error("❌ FETCH ERROR:", err);
       setPackages([]);
-      setError("Failed to load packages");
     } finally {
       setLoading(false);
     }
@@ -168,7 +174,6 @@ useEffect(() => {
 
   fetchPackages();
 }, []);
-
 // 🔥 AUTO CITY SUGGESTION
 useEffect(() => {
   const cities = [
