@@ -164,7 +164,7 @@ useEffect(() => {
 useEffect(() => {
   const cities = [
     ...new Set(
-      safePackages
+      (Array.isArray(safePackages) ? safePackages : [])
         .map((p) => p?.flight_from || "")
         .filter((c) => typeof c === "string" && c.trim() !== "")
     ),
