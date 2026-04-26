@@ -128,8 +128,6 @@ const getBotReply = (input: string) => {
       noPackages: "Babu kunshi",
     },
   };
-
- // 🔥 FETCH PACKAGES
 useEffect(() => {
   const fetchPackages = async () => {
     try {
@@ -139,10 +137,23 @@ useEffect(() => {
 
       console.log("🔥 RAW:", res.data);
 
-      // ✅ ALWAYS ARRAY
-      const safeData = Array.isArray(res.data?.data)
-        ? res.data.data
-        : [];
+      let safeData: any[] = [];
+
+      // ✅ HANDLE ALL CASES
+      if (Array.isArray(res.data)) {
+        safeData = res.data;
+      } else if (Array.isArray(res.data?.data)) {
+        safeData = res.data.data;
+      } else if (Array.isArray(res.data?.packages)) {
+        safeData = res.data.packages;
+      } else if (Array.isArray(res.data?.results)) {
+        safeData = res.data.results;
+      } else {
+        console.error("❌ NOT ARRAY:", res.data);
+        safeData = [];
+      }
+
+      console.log("✅ FINAL ARRAY:", safeData);
 
       setPackages(safeData);
 
