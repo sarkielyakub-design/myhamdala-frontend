@@ -30,13 +30,18 @@ export default function PackagesPage() {
   }, []);
 
   // 🔍 SEARCH FILTER
-  useEffect(() => {
-    const result = packages.filter((pkg) =>
-      pkg.title?.toLowerCase().includes(search.toLowerCase())
-    );
-    setFiltered(result);
-  }, [search, packages]);
+ useEffect(() => {
+  const safePackages = Array.isArray(packages) ? packages : [];
 
+  const result = safePackages.filter((pkg) => {
+    const title = String(pkg?.title || "").toLowerCase();
+    const query = String(search || "").toLowerCase();
+
+    return title.includes(query);
+  });
+
+  setFiltered(result);
+}, [search, packages]);
   return (
     <div className="min-h-screen bg-black text-white px-6 py-10">
 

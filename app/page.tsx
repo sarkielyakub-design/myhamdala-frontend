@@ -16,19 +16,19 @@ export default function Home() {
   // ✅ NOW USE IT BELOW
   const priceGroups = [0, 2_000_000, 4_000_000, 6_000_000, 8_000_000, 10_000_000];
 
-  const histogram = priceGroups.map((min, index) => {
-    const max = priceGroups[index + 1] ?? Infinity;
+  const histogram = priceGroups.map((range, i) => {
+  const next = priceGroups[i + 1] || Infinity;
 
-    const count = safePackages.reduce((acc, pkg) => {
-      const price = Number(pkg?.price ?? 0);
-      return price >= min && price < max ? acc + 1 : acc;
-    }, 0);
+  const count = (Array.isArray(packages) ? packages : []).filter((p) => {
+    const price = Number(p?.price || 0);
+    return price >= range && price < next;
+  }).length;
 
-    return {
-      label: `₦${min / 1_000_000}M`,
-      count,
-    };
-  });
+  return {
+    label: `₦${range / 1000000}M`,
+    count,
+  };
+});
  const [lang, setLang] = useState<Lang>("en");
   const [videoError, setVideoError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -165,18 +165,17 @@ useEffect(() => {
   const cities = [
     ...new Set(
       safePackages
-        .map((p) => p?.flight_from)
-        .filter(Boolean)
+        .map((p) => p?.flight_from || "")
+        .filter((c) => typeof c === "string" && c.trim() !== "")
     ),
   ];
 
   setSuggestions(
     cities.filter((c) =>
-      c.toLowerCase().includes(cityInput.toLowerCase())
+      c.toLowerCase().includes((cityInput || "").toLowerCase())
     )
   );
 }, [cityInput, safePackages]);
-
 // 🚀 BOOKING
 const handleBooking = (id: number) => {
   const token = localStorage.getItem("token");
@@ -189,39 +188,47 @@ const handleBooking = (id: number) => {
   window.location.href = `/booking/${id}`;
 };
 
-// ✅ FILTER LOGIC (FULL SAFE)
-const filteredPackages = safePackages.filter((pkg) => {
+const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filter((pkg) => {
   if (!pkg) return false;
 
-  const title = (pkg.title || "").toLowerCase();
-  const category = (pkg.category || "").toLowerCase();
-  const flightFrom = (pkg.flight_from || "").toLowerCase();
-  const pkgPrice = Number(pkg.price || 0);
+  const title = String(pkg.title || "").toLowerCase();
+  const category = String(pkg.category || "").toLowerCase();
+  const flightFrom = String(pkg.flight_from || "").toLowerCase();
+  const pkgPrice = Number(pkg.price ?? 0);
 
   // TYPE
-  if (filterType !== "all" && !title.includes(filterType.toLowerCase())) {
+  if (
+    filterType !== "all" &&
+    !title.includes(String(filterType).toLowerCase())
+  ) {
     return false;
   }
 
   // CATEGORY
-  if (filterCategory !== "all" && category !== filterCategory.toLowerCase()) {
+  if (
+    filterCategory !== "all" &&
+    category !== String(filterCategory).toLowerCase()
+  ) {
     return false;
   }
 
   // PRICE
-  if (pkgPrice > price) {
+  if (pkgPrice > Number(price)) {
     return false;
   }
 
   // DATE
   if (date && pkg.departure_date) {
-    if (!pkg.departure_date.includes(date)) {
+    if (!String(pkg.departure_date).includes(date)) {
       return false;
     }
   }
 
   // CITY
-  if (city !== "all" && !flightFrom.includes(city.toLowerCase())) {
+  if (
+    city !== "all" &&
+    !flightFrom.includes(String(city).toLowerCase())
+  ) {
     return false;
   }
 
