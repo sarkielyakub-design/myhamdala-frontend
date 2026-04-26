@@ -141,6 +141,7 @@ useEffect(() => {
 
       console.log("🔥 RAW:", res.data);
 
+      // ✅ ALWAYS ARRAY
       const safeData = Array.isArray(res.data?.data)
         ? res.data.data
         : [];
@@ -150,6 +151,7 @@ useEffect(() => {
     } catch (err) {
       console.error("❌ FETCH ERROR:", err);
       setPackages([]);
+      setError("Failed to load packages");
     } finally {
       setLoading(false);
     }
@@ -157,7 +159,6 @@ useEffect(() => {
 
   fetchPackages();
 }, []);
-
 
 // 🔥 AUTO CITY SUGGESTION
 useEffect(() => {

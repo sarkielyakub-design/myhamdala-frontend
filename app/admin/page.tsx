@@ -68,7 +68,7 @@ export default function AdminDashboard() {
       console.log("🔥 RAW:", res.data);
 
       // ✅ FIX HERE
-      setPackages(res.data.data || []);
+     
 
     } catch (err) {
       console.error(err);
