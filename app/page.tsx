@@ -20,17 +20,21 @@ export default function Home() {
   // ✅ NOW USE IT BELOW
   const priceGroups = [0, 2_000_000, 4_000_000, 6_000_000, 8_000_000, 10_000_000];
 
-  const histogram = priceGroups.map((range, i) => {
-  const next = priceGroups[i + 1] || Infinity;
-const count = safePackages.filter(
-  (p) => Number(p?.price || 0) >= range &&
-         Number(p?.price || 0) < next
-).length;
-  return {
-    label: `₦${range / 1000000}M`,
-    count,
-  };
-});
+const histogram = Array.isArray(safePackages)
+  ? priceGroups.map((range, i) => {
+      const next = priceGroups[i + 1] ?? Infinity;
+
+      const count = safePackages.reduce((acc, p) => {
+        const val = Number(p?.price ?? 0);
+        return val >= range && val < next ? acc + 1 : acc;
+      }, 0);
+
+      return {
+        label: `₦${range / 1_000_000}M`,
+        count,
+      };
+    })
+  : [];
  const [lang, setLang] = useState<Lang>("en");
   const [videoError, setVideoError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -48,9 +52,9 @@ const count = safePackages.filter(
 const [filterCategory, setFilterCategory] = useState("all");
 
 
-const recommendedPackages = safePackages
-  .filter((p) => Number(p?.price || 0) <= price)// match user budget
-  .sort((a, b) => (b.rating || 4.5) - (a.rating || 4.5)) // best first
+const recommendedPackages = (Array.isArray(safePackages) ? safePackages : [])
+  .filter((p) => Number(p?.price || 0) <= price)
+  .sort((a, b) => (b.rating || 4.5) - (a.rating || 4.5))
   .slice(0, 3);
 const [cityInput, setCityInput] = useState("");
 const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -558,7 +562,7 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
   <span>✔ Best Prices</span>
 </div>
 <p className="text-center text-gray-400 mb-4">
-  Showing {filteredPackages.length} of {packages.length} packages
+ Showing {filteredPackages.length} of {safePackages.length}
 </p>
 {recommendedPackages.length > 0 && (
   <div className="px-6 mb-10">
