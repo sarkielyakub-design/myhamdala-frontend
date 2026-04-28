@@ -149,22 +149,23 @@ if (!res.ok) {
   return;
 }
 
-// ✅ SUCCESS
+/// ✅ SUCCESS
 alert("✅ Package Created Successfully");
 
-// 🔄 RESET FORM
+// ✅ GET NEW PACKAGE FROM RESPONSE
+const newPackage = data?.data;
+
+// 🔄 SEND TO PARENT (IMPORTANT)
+if (onCreated && newPackage) {
+  onCreated(newPackage);
+}
+
+// 🔄 RESET FORM (ONLY ONCE)
 setForm(initialForm);
 setImages([]);
 setPreviews([]);
 
-// 🔄 REFRESH LIST
-onCreated && onCreated();  // 🔄 RESET FORM
-    setForm(initialForm);
-    setImages([]);
-    setPreviews([]);
-
-    // 🔄 REFRESH LIST
-    onCreated && onCreated();
+   
 
   } catch (err: any) {
   console.log("🔥 FULL ERROR:", err);
