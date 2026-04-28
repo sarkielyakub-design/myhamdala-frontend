@@ -107,9 +107,21 @@ export default function AdminDashboard() {
   };
 
   // 🚀 INITIAL LOAD
-  useEffect(() => {
-    fetchData();
-  }, []);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const res = await API.get("/admin/packages");
+      setPackages(res.data.data);
+    } catch (err) {
+      console.error("ADMIN ERROR:", err);
+      setError("Not authorized or failed to load");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
  // ✅ EDIT HANDLER (🔥 KEY FIX)
   const handleEdit = (pkg: any) => {
     setForm({
@@ -288,4 +300,8 @@ export default function AdminDashboard() {
 
     </div>
   );
+}
+
+function setError(arg0: string) {
+  throw new Error("Function not implemented.");
 }
