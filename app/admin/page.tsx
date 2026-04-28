@@ -110,8 +110,13 @@ export default function AdminDashboard() {
 useEffect(() => {
   const fetchData = async () => {
     try {
-      const res = await API.get("/admin/packages");
-      setPackages(res.data.data);
+     const res = await API.get("/admin/packages");
+
+const safeData = Array.isArray(res.data?.data)
+  ? res.data.data
+  : [];
+
+setPackages(safeData);
     } catch (err) {
       console.error("ADMIN ERROR:", err);
       setError("Not authorized or failed to load");
