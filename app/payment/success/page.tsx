@@ -1,50 +1,166 @@
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { reference?: string };
-}) {
-  const reference = searchParams?.reference;
+"use client";
+
+import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+export default function PaymentSuccess() {
+  const params = useSearchParams();
+  const router = useRouter();
+
+  const reference = params.get("reference");
+
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+
+  useEffect(() => {
+    if (!reference) {
+      setStatus("error");
+      return;
+    }
+
+    fetch(`https://travel-backend-0052.onrender.com/api/v1/bookings/verify/${reference}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setStatus("success");
+
+          // 🔥 redirect after 4s
+          setTimeout(() => {
+            router.push("/");
+          }, 4000);
+        } else {
+          setStatus("error");
+        }
+      })
+      .catch(() => setStatus("error"));
+  }, [reference]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0B0F19] text-white px-6">
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-10 text-center">
+    <div style={styles.page}>
+      <div style={styles.card}>
 
-        {!reference && (
-          <>
-            <h1 className="text-3xl text-red-400 mb-4">
-              ❌ Invalid Payment
-            </h1>
-            <p className="text-gray-300">Missing reference</p>
-          </>
+        {/* ICON */}
+        {status === "loading" && <Spinner />}
+        {status === "success" && <SuccessIcon />}
+        {status === "error" && <ErrorIcon />}
+
+        {/* TITLE */}
+        <h2 style={styles.title}>
+          {status === "loading" && "Processing Payment..."}
+          {status === "success" && "Payment Successful"}
+          {status === "error" && "Payment Failed"}
+        </h2>
+
+        {/* TEXT */}
+        <p style={styles.subtitle}>
+          {status === "loading" && "Please wait while we confirm your booking"}
+          {status === "success" && "Your booking has been confirmed"}
+          {status === "error" && "Something went wrong, contact support"}
+        </p>
+
+        {/* BUTTON */}
+        {status !== "loading" && (
+          <button style={styles.button} onClick={() => router.push("/")}>
+            Go Home
+          </button>
         )}
 
-        {reference && (
-          <>
-            <h1 className="text-3xl text-yellow-400 mb-4">
-              ⏳ Processing Payment...
-            </h1>
-
-            <p className="text-gray-400 mb-6">
-              Please wait while we confirm your booking
-            </p>
-
-            {/* SIMPLE CLIENT SIDE SCRIPT */}
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  fetch("https://travel-backend-oo52.onrender.com/api/v1/bookings/verify/${reference}")
-                    .then(() => {
-                      document.body.innerHTML = "<h1 style='color:green;text-align:center;margin-top:40vh;'>✅ Payment Successful</h1>";
-                    })
-                    .catch(() => {
-                      document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:40vh;'>❌ Payment Failed</h1>";
-                    });
-                `,
-              }}
-            />
-          </>
-        )}
       </div>
     </div>
   );
 }
+
+/* ================= UI ================= */
+
+function Spinner() {
+  return <div style={styles.spinner}></div>;
+}
+
+function SuccessIcon() {
+  return <div style={styles.success}>✓</div>;
+}
+
+function ErrorIcon() {
+  return <div style={styles.error}>✕</div>;
+}
+
+/* ================= STYLES ================= */
+
+const styles: any = {
+  page: {
+    height: "100vh",
+    background: "linear-gradient(135deg, #0f172a, #1e293b)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    fontFamily: "Inter, sans-serif",
+  },
+
+  card: {
+    background: "#fff",
+    padding: "40px",
+    borderRadius: "20px",
+    width: "90%",
+    maxWidth: "400px",
+    textAlign: "center",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+  },
+
+  title: {
+    fontSize: "22px",
+    fontWeight: "600",
+    marginTop: "20px",
+  },
+
+  subtitle: {
+    fontSize: "14px",
+    color: "#555",
+    marginTop: "10px",
+  },
+
+  button: {
+    marginTop: "25px",
+    padding: "12px 20px",
+    border: "none",
+    borderRadius: "10px",
+    background: "#0ea5e9",
+    color: "#fff",
+    fontWeight: "600",
+    cursor: "pointer",
+  },
+
+  spinner: {
+    width: "60px",
+    height: "60px",
+    border: "5px solid #ddd",
+    borderTop: "5px solid #0ea5e9",
+    borderRadius: "50%",
+    animation: "spin 1s linear infinite",
+    margin: "0 auto",
+  },
+
+  success: {
+    width: "70px",
+    height: "70px",
+    borderRadius: "50%",
+    background: "#22c55e",
+    color: "#fff",
+    fontSize: "32px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto",
+  },
+
+  error: {
+    width: "70px",
+    height: "70px",
+    borderRadius: "50%",
+    background: "#ef4444",
+    color: "#fff",
+    fontSize: "32px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: "0 auto",
+  },
+};
