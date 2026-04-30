@@ -601,7 +601,7 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
         {/* IMAGE */}
         <div className="relative">
           <img
-            src={getImage(pkg.image_url)}
+            src={pkg.image_url}
             className="w-full h-52 object-cover"
           />
 
