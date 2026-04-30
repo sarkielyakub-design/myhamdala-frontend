@@ -21,83 +21,52 @@ export default function AdminDashboard() {
   });
 
   const [loading, setLoading] = useState(true);
- // 🔥 NEW: EDIT STATES
+
   const [form, setForm] = useState<any>({});
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  // 🚀 LOGOUT FUNCTION
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
-  // 🧠 SAFE DATA EXTRACTOR (PRO)
+  // ✅ SAFE EXTRACTOR
   const safeData = (res: any, fallback: any) => {
     if (!res) return fallback;
-    if (res.data && res.data.data !== undefined) return res.data.data;
+    if (res.data?.data !== undefined) return res.data.data;
     if (res.data !== undefined) return res.data;
     return fallback;
   };
 
-  // 🚀 FETCH DATA (PRO MAX SAFE)
+  // ✅ SINGLE SOURCE OF TRUTH
   const fetchData = async () => {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem("token");
-
-      // ❌ NO TOKEN
-      if (!token) {
-        window.location.href = "/login";
-        return;
-      }
-
-      // 🔥 SAFE PARALLEL CALLS (NO FULL CRASH)
-      const [pkgRes, bookRes, analyticsRes] = await Promise.allSettled([
+      const [pkgRes, bookRes, analyticsRes] = await Promise.all([
         API.get("/admin/packages"),
         API.get("/admin/bookings"),
         API.get("/admin/analytics"),
       ]);
 
-      // 📦 PACKAGES
-      useEffect(() => {
-  const fetchPackages = async () => {
-    try {
-      const res = await API.get("/packages");
+      setPackages(safeData(pkgRes, []));
+      setBookings(safeData(bookRes, []));
 
-      console.log("🔥 RAW:", res.data);
+      const analyticsData = safeData(analyticsRes, {});
+      setAnalytics({
+        total_bookings: analyticsData.total_bookings || 0,
+        paid: analyticsData.paid || 0,
+        pending: analyticsData.pending || 0,
+        conversion_rate: analyticsData.conversion_rate || 0,
+      });
 
-      // ✅ FIX HERE
-     
-
-    } catch (err) {
-      console.error(err);
-      setPackages([]);
-    }
-  };
-
-  fetchPackages();
-}, []);
-      // 📘 BOOKINGS
-      if (bookRes.status === "fulfilled") {
-        setBookings(safeData(bookRes.value, []));
-      } else {
-        console.error("❌ Bookings error:", bookRes.reason);
-        setBookings([]);
-      }
-
-      // 📊 ANALYTICS
-      if (analyticsRes.status === "fulfilled") {
-        setAnalytics(safeData(analyticsRes.value, {}));
-      } else {
-        console.error("❌ Analytics error:", analyticsRes.reason);
-      }
-
+      console.log("📊 ANALYTICS:", analyticsData);
+      console.log("📘 BOOKINGS:", bookRes);
     } catch (err: any) {
-      console.error("🔥 Admin fetch error:", err?.response?.data || err);
+      console.error("🔥 FETCH ERROR:", err);
 
       if (err?.response?.status === 401) {
-        alert("⚠️ Session expired. Please login again.");
+        alert("Session expired");
         localStorage.removeItem("token");
         window.location.href = "/login";
       }
@@ -106,53 +75,30 @@ export default function AdminDashboard() {
     }
   };
 
-  // 🚀 INITIAL LOAD
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-     const res = await API.get("/admin/packages");
+  // ✅ LOAD ONCE
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-const safeData = Array.isArray(res.data?.data)
-  ? res.data.data
-  : [];
-
-setPackages(safeData);
-    } catch (err) {
-      console.error("ADMIN ERROR:", err);
-      setError("Not authorized or failed to load");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, []);
- // ✅ EDIT HANDLER (🔥 KEY FIX)
+  // ✅ EDIT
   const handleEdit = (pkg: any) => {
     setForm({
       title: pkg.title,
       description: pkg.description,
       price: pkg.price,
-
       flight_name: pkg.flight_name,
       flight_from: pkg.flight_from,
       flight_to: pkg.flight_to,
-
       departure_date: pkg.departure_date,
       return_date: pkg.return_date,
-
       hotel_name: pkg.hotel_name,
       hotel_rating: pkg.hotel_rating,
-
       category: pkg.category,
-
       duration_days: pkg.duration_days,
       total_slots: pkg.total_slots,
     });
 
     setEditingId(pkg.id);
-
-    // scroll to form
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
