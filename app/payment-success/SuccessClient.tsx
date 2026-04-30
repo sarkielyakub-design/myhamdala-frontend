@@ -8,15 +8,15 @@ export default function SuccessClient() {
   const reference = params.get("reference");
 
   useEffect(() => {
-  if (reference) {
-    console.log("REFERENCE:", reference);
+    if (reference) {
+      console.log("REFERENCE:", reference);
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bookings/verify/${reference}`)
-      .then(res => res.json())
-      .then(data => console.log("VERIFY:", data))
-      .catch(err => console.error("VERIFY ERROR:", err));
-  }
-}, [reference]);
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/bookings/verify/${reference}`)
+        .then(res => res.json())
+        .then(data => console.log("VERIFY:", data))
+        .catch(err => console.error("VERIFY ERROR:", err));
+    }
+  }, [reference]);
 
   return (
     <div className="flex h-screen items-center justify-center bg-black text-white">
