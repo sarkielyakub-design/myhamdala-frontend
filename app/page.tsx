@@ -576,6 +576,25 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
         </div>
       ))}
     </div>
+    <section className="py-16 text-center px-6 max-w-4xl mx-auto">
+  <h2 className="text-3xl text-yellow-400 mb-4">
+    Why Choose Us
+  </h2>
+
+  <p className="text-gray-300 leading-relaxed">
+    M.Y Hamdala Associates Company Limited is a trusted name in travel and logistics,
+    delivering reliable and professional services across Nigeria and West Africa since 2008.
+    We combine modern systems with deep industry expertise to give you a smooth, secure,
+    and stress-free journey.
+  </p>
+
+  <a
+    href="/about"
+    className="inline-block mt-6 bg-yellow-500 text-black px-6 py-2 rounded-lg hover:bg-yellow-400 transition"
+  >
+    Learn More →
+  </a>
+</section>
   </div>
 )}
       {/* PACKAGES */}

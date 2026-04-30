@@ -9,133 +9,132 @@ export default function AboutPage() {
 
   const t = {
     en: {
-      title: "About M.Y HAMDALA TRAVEL AND TOUR",
-      subtitle: "Over a Decade of Trusted Travel Excellence",
+  title: "About M.Y Hamdala Associates Company Limited",
+  subtitle: "Delivering Excellence in Travel, Logistics & Global Mobility",
 
-      desc1:
-        "M.Y HAMDALA TRAVEL AND TOUR is a fully established travel company with over 10 years of proven experience in delivering reliable and professional travel services across Africa and beyond.",
+  desc1:
+    "M.Y Hamdala Associates Company Limited is a trusted name in international travel, freight, and logistics services. Established in 2008, we have built a reputation for delivering reliable, cost-effective, and professional solutions across Nigeria and West Africa.",
 
-      desc2:
-        "We specialize in ticket reservations, hotel bookings, visa processing, Umrah & Hajj packages, international tours, work visas, and work permits — providing a complete travel solution under one roof.",
+  desc2:
+    "We specialize in air and sea freight, travel services, visa processing, Umrah & Hajj packages, and global mobility solutions tailored to meet the specific needs of individuals and businesses.",
 
-      desc3:
-        "Our approach combines modern travel systems with deep industry expertise, ensuring every client enjoys a seamless, secure, and stress-free journey from start to finish.",
+  desc3:
+    "Our strength lies in combining modern systems with deep industry expertise. We carefully understand each client's goals and provide customized solutions that ensure efficiency, compliance, and peace of mind.",
 
-      desc4:
-        "Whether you are traveling for pilgrimage, business, or relocation, we are committed to delivering excellence, transparency, and unmatched customer support.",
+  desc4:
+    "With a dedicated team of professionals and a strong global network, we continuously deliver high-quality services while maintaining transparency, integrity, and customer satisfaction.",
 
-      mission: "Our Mission",
-      missionText:
-        "To provide reliable, efficient, and transparent travel services while removing stress and uncertainty from every journey.",
+  mission: "Our Mission",
+  missionText:
+    "To provide reliable, efficient, and customer-focused travel and logistics solutions while ensuring safety, transparency, and excellence in every service we deliver.",
 
-      vision: "Our Vision",
-      visionText:
-        "To become one of Africa’s leading and most trusted travel and tour companies, known for excellence, integrity, and innovation.",
+  vision: "Our Vision",
+  visionText:
+    "To become one of Africa’s most trusted and leading travel and logistics companies, recognized for innovation, professionalism, and consistent service delivery.",
 
-      values: [
-        "Trust & Transparency",
-        "Professional Excellence",
-        "Customer Satisfaction",
-        "Integrity & Reliability",
-      ],
+  values: [
+    "Customer Satisfaction First",
+    "Integrity & Transparency",
+    "Professional Excellence",
+    "Reliability & Commitment",
+  ],
 
-      servicesTitle: "Our Services",
-      services: [
-        "✈️ Flight Ticket Reservations",
-        "🏨 Hotel Bookings",
-        "🛂 Visa Processing",
-        "🕋 Umrah & Hajj Packages",
-        "🌍 International Tours",
-        "💼 Work Visas & Permits",
-      ],
-    },
+  servicesTitle: "Our Services",
+  services: [
+    "✈️ Flight Reservations & Travel Planning",
+    "🏨 Hotel Booking & Accommodation",
+    "🛂 Visa Processing & Documentation",
+    "🕋 Umrah & Hajj Packages",
+    "🚢 Air & Sea Freight Forwarding",
+    "🌍 International Tours & Relocation",
+  ],
+},
+   ar: {
+  title: "عن شركة M.Y Hamdala Associates المحدودة",
+  subtitle: "التميز في السفر والخدمات اللوجستية والحلول العالمية",
 
-    ar: {
-      title: "عن M.Y HAMDALA للسفر والسياحة",
-      subtitle: "أكثر من 10 سنوات من الخبرة",
+  desc1:
+    "تُعد شركة M.Y Hamdala Associates المحدودة اسمًا موثوقًا في مجال السفر الدولي وخدمات الشحن والخدمات اللوجستية. تأسست الشركة في عام 2008، وقد بنت سمعة قوية في تقديم حلول احترافية وفعّالة من حيث التكلفة عبر نيجيريا وغرب إفريقيا.",
 
-      desc1:
-        "نحن شركة سفر رائدة بخبرة تزيد عن 10 سنوات في تقديم خدمات السفر باحترافية وثقة.",
+  desc2:
+    "نحن متخصصون في الشحن الجوي والبحري، وخدمات السفر، ومعالجة التأشيرات، وبرامج العمرة والحج، بالإضافة إلى حلول التنقل الدولي المصممة لتلبية احتياجات الأفراد والشركات.",
 
-      desc2:
-        "نقدم خدمات حجز التذاكر، الفنادق، التأشيرات، العمرة والحج، الرحلات السياحية، وتأشيرات العمل.",
+  desc3:
+    "تكمن قوتنا في الجمع بين الأنظمة الحديثة والخبرة العميقة في المجال. نحن نحرص على فهم أهداف كل عميل وتقديم حلول مخصصة تضمن الكفاءة والامتثال وراحة البال.",
 
-      desc3:
-        "نضمن تجربة سفر سهلة وآمنة باستخدام أحدث الأنظمة وخبرة طويلة في المجال.",
+  desc4:
+    "بفضل فريقنا المتخصص وشبكتنا العالمية القوية، نواصل تقديم خدمات عالية الجودة مع الحفاظ على الشفافية والنزاهة ورضا العملاء.",
 
-      desc4:
-        "نلتزم بتقديم أفضل خدمة وراحة للعملاء في جميع مراحل السفر.",
+  mission: "مهمتنا",
+  missionText:
+    "تقديم خدمات سفر وخدمات لوجستية موثوقة وفعالة تركز على العميل، مع ضمان الأمان والشفافية والتميز في كل ما نقدمه.",
 
-      mission: "مهمتنا",
-      missionText:
-        "تقديم خدمات سفر موثوقة وسهلة مع إزالة جميع التعقيدات.",
+  vision: "رؤيتنا",
+  visionText:
+    "أن نصبح واحدة من أكثر الشركات ثقة وريادة في إفريقيا في مجال السفر والخدمات اللوجستية، معروفة بالابتكار والاحترافية والاستمرارية في تقديم الخدمة.",
 
-      vision: "رؤيتنا",
-      visionText:
-        "أن نصبح من أفضل شركات السفر في إفريقيا.",
+  values: [
+    "رضا العملاء أولاً",
+    "النزاهة والشفافية",
+    "التميز المهني",
+    "الالتزام والموثوقية",
+  ],
 
-      values: [
-        "الثقة",
-        "الاحترافية",
-        "رضا العملاء",
-        "المصداقية",
-      ],
-
-      servicesTitle: "خدماتنا",
-      services: [
-        "حجز التذاكر",
-        "حجز الفنادق",
-        "التأشيرات",
-        "العمرة والحج",
-        "الرحلات",
-        "تأشيرات العمل",
-      ],
-    },
-
+  servicesTitle: "خدماتنا",
+  services: [
+    "✈️ حجز تذاكر الطيران والتخطيط للسفر",
+    "🏨 حجز الفنادق والإقامة",
+    "🛂 معالجة التأشيرات والمستندات",
+    "🕋 برامج العمرة والحج",
+    "🚢 الشحن الجوي والبحري",
+    "🌍 الجولات الدولية وخدمات الانتقال",
+  ],
+},
     ha: {
-      title: "Game da M.Y HAMDALA TRAVEL AND TOUR",
-      subtitle: "Fiye da shekaru 10 na kwarewa",
+  title: "Game da M.Y Hamdala Associates Company Limited",
+  subtitle: "Kwarewa a Harkokin Tafiya, Jiragen Kaya da Sabis na Duniya",
 
-      desc1:
-        "Muna da shekaru sama da 10 muna samar da ingantaccen sabis na tafiya.",
+  desc1:
+    "M.Y Hamdala Associates Company Limited kamfani ne mai aminci a harkokin tafiya na kasa da kasa, jigilar kaya, da ayyukan lodistik. An kafa kamfanin a shekarar 2008, kuma ya gina suna mai kyau wajen samar da ayyuka masu inganci, saukin farashi, da kwarewa a Najeriya da duk yankin Yammacin Afirka.",
 
-      desc2:
-        "Muna yin tikiti, hotel, visa, Umrah, Hajj, yawon bude ido da work visa.",
+  desc2:
+    "Muna kwarewa a jigilar kaya ta jirgin sama da ruwa, ayyukan tafiya, sarrafa visa, shirye-shiryen Umrah da Hajj, da kuma hanyoyin motsi na duniya da aka tsara domin biyan bukatun mutane da kamfanoni.",
 
-      desc3:
-        "Muna tabbatar da tafiya mai sauƙi da aminci ga dukkan kwastomomi.",
+  desc3:
+    "Karfinmu yana cikin hada sabbin fasahohi da gogewa mai zurfi a wannan fanni. Muna fahimtar bukatun kowanne kwastoma domin samar da mafita ta musamman wacce ke tabbatar da inganci, bin doka, da kwanciyar hankali.",
 
-      desc4:
-        "Muna ba da kulawa ta musamman daga farko har ƙarshe.",
+  desc4:
+    "Da taimakon kwararrun ma’aikata da kuma babbar hanyar sadarwa ta duniya, muna ci gaba da bayar da ayyuka masu inganci tare da kiyaye gaskiya, rikon amana, da gamsuwar kwastomomi.",
 
-      mission: "Manufarmu",
-      missionText:
-        "Samar da sabis mai sauƙi da amana ga matafiya.",
+  mission: "Manufarmu",
+  missionText:
+    "Samar da ayyukan tafiya da lodistik masu inganci, masu sauki, kuma masu mayar da hankali ga kwastoma, tare da tabbatar da tsaro, gaskiya, da kwarewa a duk ayyukanmu.",
 
-      vision: "Burimmu",
-      visionText:
-        "Zama daya daga cikin manyan kamfanonin tafiya a Afrika.",
+  vision: "Burinmu",
+  visionText:
+    "Zama daya daga cikin manyan kamfanonin tafiya da lodistik mafi aminci a Afirka, wanda aka san shi da kirkire-kirkire, kwarewa, da ingantaccen aiki.",
 
-      values: [
-        "Aminci",
-        "Kwarewa",
-        "Gamsuwar abokin ciniki",
-        "Gaskiya",
-      ],
+  values: [
+    "Gamsuwar Kwastoma a gaba",
+    "Gaskiya da Rikon Amana",
+    "Kwarewa a Aiki",
+    "Aminci da Sadaukarwa",
+  ],
 
-      servicesTitle: "Ayyukanmu",
-      services: [
-        "Tikiti",
-        "Hotel",
-        "Visa",
-        "Umrah & Hajj",
-        "Yawon shakatawa",
-        "Work visa",
-      ],
-    },
+  servicesTitle: "Ayyukanmu",
+  services: [
+    "✈️ Shirya Tafiya da Tikitin Jirgin Sama",
+    "🏨 Tanadin Otal da Masauki",
+    "🛂 Sarrafa Visa da Takardu",
+    "🕋 Shirye-shiryen Umrah da Hajj",
+    "🚢 Jigilar Kaya ta Sama da Ruwa",
+    "🌍 Yawon Bude Ido na Duniya da Sauya Wuri",
+  ],
+},
   };
 
   return (
+    
     <div className="text-white min-h-screen">
 
       {/* 🌌 BACKGROUND */}
@@ -222,7 +221,25 @@ export default function AboutPage() {
         </div>
 
       </section>
+<section className="py-20 max-w-5xl mx-auto px-6 text-center">
+  <h2 className="text-3xl text-yellow-400 mb-6">
+    Company Overview
+  </h2>
 
+  <div className="grid md:grid-cols-3 gap-6">
+    <div className="bg-white/10 p-6 rounded-xl border border-white/20">
+      Customer satisfaction is our top priority
+    </div>
+
+    <div className="bg-white/10 p-6 rounded-xl border border-white/20">
+      Clients are treated as partners, not outsiders
+    </div>
+
+    <div className="bg-white/10 p-6 rounded-xl border border-white/20">
+      We ensure safety and reliability in all services
+    </div>
+  </div>
+</section>
     </div>
   );
 }
