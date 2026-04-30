@@ -557,7 +557,7 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
     Search 🔍
   </button>
 </div><div className="mt-6 flex gap-6 text-gray-300 text-sm justify-center">
-  <span>✔ Trusted Agency</span>
+  <span>✔ 15+ Years Experience</span>
   <span>✔ 24/7 Support</span>
   <span>✔ Best Prices</span>
 </div>
