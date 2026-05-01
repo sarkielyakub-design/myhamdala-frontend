@@ -111,7 +111,7 @@ const getImage = (path: string | null) => {
 };
   const t = {
     en: {
-      hero: "M.Y HAMDALA TRAVEL&TOUR  Experience the Spiritual Journey",
+      hero: "M.Y HAMDALA Experience the Spiritual Journey",
       
       sub: "Experience a seamless and spiritually enriching journey with our luxury Umrah & Hajj packages. Enjoy premium accommodation, reliable flights, expert guidance, and 24/7 support — all designed to give you complete comfort and peace of mind.",
       book: "Book Now",
@@ -121,7 +121,7 @@ const getImage = (path: string | null) => {
       noPackages: "No packages available",
     },
     ar: {
-      hero: "M.Y HAMDALA TRAVEL&TOURرحلة روحانية مميزة",
+      hero: "M.Y HAMDALa رحلة روحانية مميزة",
       sub: "استمتع برحلة روحانية سلسة ومليئة بالطمأنينة مع باقات العمرة والحج الفاخرة لدينا. نوفر إقامة متميزة، رحلات موثوقة، إرشاداً متخصصاً، ودعماً على مدار الساعة — كل ذلك لضمان راحتك التامة وراحة بالك.",
       book: "احجز الآن",
       about: "حول",
@@ -130,7 +130,7 @@ const getImage = (path: string | null) => {
       noPackages: "لا توجد باقات",
     },
     ha: {
-      hero: "M.Y HAMDALA TRAVEL&TOUR Tafiya Mai Tsarki",
+      hero: "M.Y HAMDALA Tafiya Mai Tsarki",
       sub: "Ji daɗin tafiya mai tsarki cikin sauƙi da kwanciyar hankali tare da kunshin Umrah da Hajj na alfarma. Muna samar da masauki mai inganci, jiragen sama masu aminci, jagoranci na ƙwararru, da tallafi na awanni 24 — duk domin tabbatar da cikakken jin daɗi da kwanciyar hankalinka.",
       book: "Yi Booking",
       about: "Game da Mu",
@@ -344,14 +344,6 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
 
     <a
       href="/about"
-      onClick={() => setMenuOpen(false)}
-      className="hover:text-yellow-400"
-    >
-      {t[lang].about}
-    </a>
-
-    <a
-      href="/privacy"
       onClick={() => setMenuOpen(false)}
       className="hover:text-yellow-400"
     >
