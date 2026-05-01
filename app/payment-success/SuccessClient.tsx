@@ -20,7 +20,7 @@ export default function SuccessClient() {
 
     const verifyPayment = async () => {
       try {
-        const res = await API.get(`/verify/${reference}`);
+        const res = await API.get(`/bookings/verify/${reference}`)
 
         console.log("✅ VERIFY:", res.data);
 
