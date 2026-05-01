@@ -818,8 +818,10 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
 
       <div className="space-y-2 text-gray-300 text-sm">
         <p>📍 NO26 BLOCK A RAILWAY LAGOS STREET, CIVI CENTER KANO</p>
-        <p>📞 +234 7065854518</p>
-        <p>✉️ dodoumarhafiz@gmail.com</p>
+        <p>📞 md/ceo 08034454580</p>
+         <p>📞 sec/manager 07030777053</p>
+          <p>📞 vis/ticket officer 07065854518</p>
+        <p>✉️ myhamdala2020@gmail.com</p>
       </div>
 
       {/* 🔥 SOCIAL ICONS (PRO MAX) */}
