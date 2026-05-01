@@ -1,10 +1,15 @@
 import axios from "axios";
 
+// 🔥 BASE CONFIG
 const API = axios.create({
-  baseURL: "https://travel-backend-oo52.onrender.com/api/v1",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://travel-backend-oo52.onrender.com/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: false, // change to true only if using cookies
 });
 
-// 🔐 Attach token automatically
+// 🔐 REQUEST INTERCEPTOR (Attach Token)
 API.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("token");
@@ -17,19 +22,24 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// 🔥 RESPONSE HANDLER (FIXED)
+// 🎯 RESPONSE INTERCEPTOR (SMART HANDLING)
 API.interceptors.response.use(
-  (response) => {
-    return response; // ✅ keep raw response
-  },
+  (response) => response,
 
   (error) => {
     const status = error.response?.status;
-    const message = error.response?.data?.detail;
+    const message =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      error.message;
 
-    console.error("API ERROR:", status, message);
+    console.error("❌ API ERROR:", {
+      status,
+      message,
+      url: error.config?.url,
+    });
 
-    // ✅ ONLY logout on 401 (invalid token)
+    // 🔐 AUTO LOGOUT ONLY IF TOKEN INVALID
     if (status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("token");
@@ -39,12 +49,6 @@ API.interceptors.response.use(
         }
       }
     }
-
-    // 🚫 DO NOT auto-logout on 403
-    // 403 can mean:
-    // - not verified
-    // - not admin
-    // - forbidden route
 
     return Promise.reject(error);
   }
