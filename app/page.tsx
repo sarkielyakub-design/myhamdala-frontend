@@ -800,7 +800,7 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
       {/* NAME */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold text-white">
-          Alhaji [CEO Name]
+          Alhaji [MUSA YUSUF YAWALE]
         </h3>
         <p className="text-yellow-400 text-sm">
           Chief Executive Officer
