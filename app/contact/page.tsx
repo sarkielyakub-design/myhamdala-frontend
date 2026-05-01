@@ -117,7 +117,7 @@ export default function ContactPage() {
 
           {/* BASIC CONTACT */}
           <div className="mt-6 text-gray-300 text-sm space-y-2">
-            <p>📍 NO26 BLOCK A RAILWAY LAGOS STREET, CIVI CENTER KANO</p>
+            <p>📍 NO26 BLOCK A RAILWAY LAGOS STREET, CIVIC CENTER KANO</p>
         <p>📞 md/ceo 08034454580</p>
          <p>📞 sec/manager 07030777053</p>
           <p>📞 vis/ticket officer 07065854518</p>

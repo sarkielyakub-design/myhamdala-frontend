@@ -872,7 +872,7 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
       <h3 className="font-semibold mb-4">Contact Us</h3>
 
       <div className="space-y-2 text-gray-300 text-sm">
-        <p>📍 NO26 BLOCK A RAILWAY LAGOS STREET, CIVI CENTER KANO</p>
+        <p>📍 NO26 BLOCK A RAILWAY LAGOS STREET, CIVIC CENTER KANO</p>
         <p>📞 md/ceo 08034454580</p>
          <p>📞 sec/manager 07030777053</p>
           <p>📞 vis/ticket officer 07065854518</p>

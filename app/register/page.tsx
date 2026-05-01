@@ -3,7 +3,7 @@
 import { useState } from "react";
 import API from "@/lib/api";
 
-type Step = "register" | "verify" | "forgot" | "reset";
+type Step = "register" | "forgot" | "reset";
 
 export default function AuthPage() {
   const [step, setStep] = useState<Step>("register");
@@ -16,7 +16,6 @@ export default function AuthPage() {
 
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: any) => {
@@ -24,7 +23,7 @@ export default function AuthPage() {
   };
 
   // =========================
-  // 📝 REGISTER
+  // 📝 REGISTER (NO OTP)
   // =========================
   const register = async () => {
     if (!form.email || !form.password || !form.name) {
@@ -36,29 +35,19 @@ export default function AuthPage() {
 
       await API.post("/auth/register", form);
 
-      setStep("verify");
+      // 🔥 OPTION 1: Redirect to login
+      window.location.href = "/login";
+
+      // 🔥 OPTION 2 (BETTER UX): auto-login
+      // const login = await API.post("/auth/login", {
+      //   email: form.email,
+      //   password: form.password,
+      // });
+      // localStorage.setItem("token", login.data.access_token);
+      // window.location.href = "/";
+
     } catch (err: any) {
       alert(err.response?.data?.detail || "Registration failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // =========================
-  // ✅ VERIFY OTP
-  // =========================
-  const verify = async () => {
-    try {
-      setLoading(true);
-
-      await API.post("/auth/verify", null, {
-        params: { email: form.email, otp },
-      });
-
-      alert("✅ Verified successfully");
-      window.location.href = "/login";
-    } catch (err: any) {
-      alert(err.response?.data?.detail || "Invalid OTP");
     } finally {
       setLoading(false);
     }
@@ -109,13 +98,11 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white px-4">
-
       <div className="w-full max-w-md bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-2xl shadow-xl">
 
         {/* TITLE */}
         <h2 className="text-3xl font-bold text-center text-yellow-400 mb-6">
           {step === "register" && "Create Account"}
-          {step === "verify" && "Verify Email"}
           {step === "forgot" && "Forgot Password"}
           {step === "reset" && "Reset Password"}
         </h2>
@@ -123,27 +110,9 @@ export default function AuthPage() {
         {/* REGISTER */}
         {step === "register" && (
           <>
-            <input
-              name="name"
-              placeholder="Name"
-              onChange={handleChange}
-              className="input"
-            />
-
-            <input
-              name="email"
-              placeholder="Email"
-              onChange={handleChange}
-              className="input"
-            />
-
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              onChange={handleChange}
-              className="input"
-            />
+            <input name="name" placeholder="Name" onChange={handleChange} className="input" />
+            <input name="email" placeholder="Email" onChange={handleChange} className="input" />
+            <input name="password" type="password" placeholder="Password" onChange={handleChange} className="input" />
 
             <button onClick={register} className="btn-yellow">
               {loading ? "Creating..." : "Register 🚀"}
@@ -160,22 +129,6 @@ export default function AuthPage() {
             >
               Forgot Password?
             </p>
-          </>
-        )}
-
-        {/* VERIFY */}
-        {step === "verify" && (
-          <>
-            <input
-              placeholder="Enter OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              className="input"
-            />
-
-            <button onClick={verify} className="btn-green">
-              Verify Account
-            </button>
           </>
         )}
 
@@ -197,18 +150,8 @@ export default function AuthPage() {
         {/* RESET */}
         {step === "reset" && (
           <>
-            <input
-              placeholder="OTP"
-              onChange={(e) => setOtp(e.target.value)}
-              className="input"
-            />
-
-            <input
-              placeholder="New Password"
-              type="password"
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="input"
-            />
+            <input placeholder="OTP" onChange={(e) => setOtp(e.target.value)} className="input" />
+            <input placeholder="New Password" type="password" onChange={(e) => setNewPassword(e.target.value)} className="input" />
 
             <button onClick={resetPassword} className="btn-green">
               Reset Password
@@ -218,7 +161,6 @@ export default function AuthPage() {
 
       </div>
 
-      {/* 🎨 STYLES */}
       <style jsx>{`
         .input {
           width: 100%;
@@ -236,11 +178,6 @@ export default function AuthPage() {
           padding: 12px;
           border-radius: 8px;
           font-weight: bold;
-          transition: 0.2s;
-        }
-
-        .btn-yellow:hover {
-          transform: scale(1.03);
         }
 
         .btn-green {
