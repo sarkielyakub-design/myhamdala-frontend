@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import API from "@/lib/api";
+import TrustSection from "@/app/components/TrustSection";
 
 type Lang = "en" | "ar" | "ha";
 export default function Home() {
@@ -595,7 +596,9 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
     Learn More →
   </a>
 </section>
+
   </div>
+  
 )}
       {/* PACKAGES */}
   <section className="py-10 px-6">
