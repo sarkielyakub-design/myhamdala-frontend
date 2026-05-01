@@ -756,6 +756,69 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
 </div>
   )}
 </section>
+<section className="py-20 px-6 relative">
+  
+  {/* BACKGROUND GLOW */}
+  <div className="absolute inset-0 -z-10 bg-gradient-to-r from-yellow-500/10 via-transparent to-transparent" />
+
+  <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+
+    {/* 📸 IMAGE */}
+    <div className="flex justify-center md:justify-start">
+      <div className="relative group">
+
+        <img
+          src="/images/ceo.jpg" // 👉 replace with real image
+          alt="CEO"
+          className="w-72 h-80 object-cover rounded-2xl shadow-2xl border border-white/10 group-hover:scale-105 transition duration-500"
+        />
+
+        {/* glow effect */}
+        <div className="absolute inset-0 rounded-2xl border border-yellow-500/20 group-hover:border-yellow-500/50 transition" />
+
+      </div>
+    </div>
+
+    {/* 🧠 TEXT */}
+    <div className="text-center md:text-left">
+
+      <h2 className="text-3xl md:text-4xl font-bold text-yellow-400 mb-4">
+        Message from the CEO
+      </h2>
+
+      <p className="text-gray-300 mb-4 leading-relaxed">
+        At M.Y Hamdala Associates Company Limited, our mission is to deliver
+        reliable, professional, and seamless travel and logistics services
+        that meet the evolving needs of our clients across Africa and beyond.
+      </p>
+
+      <p className="text-gray-400 mb-6 leading-relaxed">
+        With years of industry experience and a dedicated team, we continue
+        to build trust through excellence, transparency, and customer satisfaction.
+      </p>
+
+      {/* NAME */}
+      <div className="mt-6">
+        <h3 className="text-lg font-semibold text-white">
+          Alhaji [CEO Name]
+        </h3>
+        <p className="text-yellow-400 text-sm">
+          Chief Executive Officer
+        </p>
+      </div>
+
+      {/* OPTIONAL SIGNATURE */}
+      <div className="mt-4">
+        <img
+          src="/images/signature.png"
+          alt="signature"
+          className="h-10 opacity-80"
+        />
+      </div>
+
+    </div>
+  </div>
+</section>
 <TrustSection/>
      <footer className="relative text-white pt-16 pb-10 px-6 mt-20 overflow-hidden">
 
