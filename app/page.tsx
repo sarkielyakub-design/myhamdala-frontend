@@ -756,6 +756,7 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
 </div>
   )}
 </section>
+<TrustSection/>
      <footer className="relative text-white pt-16 pb-10 px-6 mt-20 overflow-hidden">
 
   {/* 🔥 VIDEO OVERLAY */}
