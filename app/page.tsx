@@ -629,10 +629,6 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
   >
     Search 🔍
   </button>
-</div><div className="mt-6 flex gap-6 text-gray-300 text-sm justify-center">
-  <span>✔ 15+ Years Experience</span>
-  <span>✔ 24/7 Support</span>
-  <span>✔ Best Prices</span>
 </div>
 <p className="text-center text-gray-400 mb-4">
  Showing {filteredPackages.length} of {safePackages.length}

@@ -14,10 +14,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "M.Y HAMDALA TRAVEL AND TOUR", // 🔥 update branding
-  description: "Premium travel services, Umrah, Hajj, visa & tours",
+  title: "M.Y Hamdala Travel & Tour | Umrah, Hajj, Visa & Luxury Travel Services",
+  description:
+    "M.Y Hamdala Travel & Tour offers premium Umrah & Hajj packages, visa processing, flight booking, and international travel services across Nigeria and beyond.",
 };
-
 export default function RootLayout({
   children,
 }: {
