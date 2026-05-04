@@ -289,7 +289,7 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
 
       {/* NAVBAR */}
       <div className="flex justify-between px-6 py-4 backdrop-blur bg-black/40 sticky top-0 z-50">
-        <h1 className="text-yellow-400 font-bold text-xl">🕋 M.Y HAMDALA TRAVEL AND TOUR</h1>
+        <h1 className="text-yellow-400 font-bold text-xl">🕋 M.Y HAMDALA TRAVEL & TOUR</h1>
 
         <div className="hidden md:flex gap-4 items-center">
           <div className="flex gap-2 text-xl cursor-pointer">
