@@ -314,13 +314,93 @@ const filteredPackages = (Array.isArray(safePackages) ? safePackages : []).filte
         <button className="md:hidden text-2xl" onClick={() => setMenuOpen(true)}>☰</button>
       </div>
 
-      {/* HERO */}
-      <section className="h-screen flex flex-col justify-center items-center text-center px-6">
-        <motion.h2 className="text-6xl font-extrabold text-yellow-400 mb-6">
-          {t[lang].hero}
-        </motion.h2>
-        <p className="max-w-xl text-gray-300 mb-8">{t[lang].sub}</p>
-      </section>
+{/* HERO */}
+<section>
+  <div className="grid md:grid-cols-2 gap-12 items-center w-full max-w-7xl mx-auto">
+
+    {/* 🧠 TEXT SIDE */}
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7 }}
+      className="text-center md:text-left"
+    >
+
+      {/* 🔥 HEADLINE */}
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+        {t[lang].hero}
+      </h1>
+
+      {/* SUBTEXT */}
+      <p className="mt-5 text-gray-600 max-w-lg mx-auto md:mx-0 text-base">
+        {t[lang].sub}
+      </p>
+
+      {/* CTA */}
+      <div className="mt-8 flex gap-4 justify-center md:justify-start">
+        <motion.a
+          href="/packages"
+          whileHover={{ scale: 1.05 }}
+          className="bg-yellow-500 text-black px-6 py-3 rounded-xl font-semibold shadow-lg"
+        >
+          {t[lang].book}
+        </motion.a>
+
+        <motion.a
+          href="/about"
+          whileHover={{ scale: 1.05 }}
+          className="border border-gray-300 px-6 py-3 rounded-xl text-gray-700"
+        >
+          Learn More
+        </motion.a>
+      </div>
+
+      {/* TRUST LINE */}
+      <div className="flex flex-wrap gap-4 mt-6 text-sm text-gray-500 justify-center md:justify-start">
+        <span>✔ 15+ Years Experience</span>
+        <span>✔ 24/7 Support</span>
+        <span>✔ Verified Agency</span>
+      </div>
+
+    </motion.div>
+
+    {/* 🖼 IMAGE WINDOW */}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.8 }}
+      className="grid grid-cols-2 gap-4"
+    >
+
+      {[
+        "/images/makkah.jpg",
+        "/images/madina.jpg",
+        "/images/kaaba.jpg",
+        "/images/hotel.jpg"
+      ].map((img, i) => (
+        <motion.div
+          key={i}
+          className="relative overflow-hidden rounded-2xl shadow-xl group"
+        >
+          <img
+            src={img}
+            className="h-36 sm:h-44 md:h-56 w-full object-cover group-hover:scale-110 transition duration-500"
+          />
+
+          {/* LIGHT OVERLAY (MORE PREMIUM THAN DARK) */}
+          <div className="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition" />
+
+          {/* FLOAT LABEL */}
+          <div className="absolute bottom-3 left-3 text-xs bg-white/80 text-black px-3 py-1 rounded-full shadow">
+            Featured
+          </div>
+        </motion.div>
+      ))}
+
+    </motion.div>
+
+  </div>
+</section>
 {/* 📱 MOBILE MENU */}
 {menuOpen && (
   <div className="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center gap-8 text-2xl">
