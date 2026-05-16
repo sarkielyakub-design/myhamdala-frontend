@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import {
   LayoutDashboard,
@@ -16,6 +16,9 @@ import {
   Menu,
   X,
   Plane,
+  Activity,
+  DollarSign,
+  Wifi,
 } from "lucide-react";
 
 import API from "@/lib/api";
@@ -28,35 +31,56 @@ import UserList from "./components/admin/UserList";
 import PaymentList from "./components/admin/PaymentList";
 
 export default function AdminDashboard() {
+
   const [tab, setTab] = useState("dashboard");
-  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const [packages, setPackages] = useState<any[]>([]);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [users, setUsers] = useState<any[]>([]);
-  const [payments, setPayments] = useState<any[]>([]);
+  const [mobileOpen, setMobileOpen] =
+    useState(false);
 
-  const [analytics, setAnalytics] = useState({
-    total_bookings: 0,
-    paid: 0,
-    pending: 0,
-    conversion_rate: 0,
-    revenue: 0,
-  });
+  const [loading, setLoading] =
+    useState(true);
 
-  const [loading, setLoading] = useState(true);
+  // 🔥 LIVE STATES
+  const [packages, setPackages] =
+    useState<any[]>([]);
 
+  const [bookings, setBookings] =
+    useState<any[]>([]);
+
+  const [users, setUsers] =
+    useState<any[]>([]);
+
+  const [payments, setPayments] =
+    useState<any[]>([]);
+
+  // 🔥 ANALYTICS
+  const [analytics, setAnalytics] =
+    useState({
+      total_bookings: 0,
+      paid: 0,
+      pending: 0,
+      conversion_rate: 0,
+      revenue: 0,
+    });
+
+  // 🔥 EDITING
   const [form, setForm] = useState<any>({});
-  const [editingId, setEditingId] = useState<number | null>(null);
+
+  const [editingId, setEditingId] =
+    useState<number | null>(null);
 
   // 🔥 LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("token");
+
     window.location.href = "/login";
   };
 
   // 🔥 SAFE DATA
-  const safeData = (res: any, fallback: any) => {
+  const safeData = (
+    res: any,
+    fallback: any
+  ) => {
     if (!res) return fallback;
 
     if (res.data?.data !== undefined) {
@@ -70,9 +94,11 @@ export default function AdminDashboard() {
     return fallback;
   };
 
-  // 🔥 FETCH
+  // 🔥 FETCH EVERYTHING LIVE
   const fetchData = async () => {
+
     try {
+
       setLoading(true);
 
       const [
@@ -89,32 +115,82 @@ export default function AdminDashboard() {
         API.get("/admin/payments"),
       ]);
 
-      setPackages(safeData(pkgRes, []));
-      setBookings(safeData(bookRes, []));
-      setUsers(safeData(usersRes, []));
-      setPayments(safeData(paymentsRes, []));
+      // 🔥 LIVE SET
+      const packageData =
+        safeData(pkgRes, []);
 
-      const analyticsData = safeData(analyticsRes, {});
+      const bookingData =
+        safeData(bookRes, []);
+
+      const userData =
+        safeData(usersRes, []);
+
+      const paymentData =
+        safeData(paymentsRes, []);
+
+      const analyticsData =
+        safeData(analyticsRes, {});
+
+      setPackages(packageData);
+
+      setBookings(bookingData);
+
+      setUsers(userData);
+
+      setPayments(paymentData);
 
       setAnalytics({
-        total_bookings: analyticsData.total_bookings || 0,
-        paid: analyticsData.paid || 0,
-        pending: analyticsData.pending || 0,
-        conversion_rate: analyticsData.conversion_rate || 0,
-        revenue: analyticsData.revenue || 0,
+        total_bookings:
+          analyticsData.total_bookings ||
+          bookingData.length,
+
+        paid:
+          analyticsData.paid ||
+          bookingData.filter(
+            (b: any) =>
+              b.status === "paid"
+          ).length,
+
+        pending:
+          analyticsData.pending ||
+          bookingData.filter(
+            (b: any) =>
+              b.status !== "paid"
+          ).length,
+
+        conversion_rate:
+          analyticsData.conversion_rate ||
+          0,
+
+        revenue:
+          analyticsData.revenue ||
+          paymentData.reduce(
+            (sum: number, p: any) =>
+              sum + Number(p.amount || 0),
+            0
+          ),
       });
+
     } catch (err: any) {
+
       console.error(err);
 
-      if (err?.response?.status === 401) {
+      if (
+        err?.response?.status === 401
+      ) {
+
         alert("Session expired");
 
         localStorage.removeItem("token");
 
-        window.location.href = "/login";
+        window.location.href =
+          "/login";
       }
+
     } finally {
+
       setLoading(false);
+
     }
   };
 
@@ -123,8 +199,21 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
-  // 🔥 EDIT
+  // 🔥 AUTO LIVE REFRESH
+  useEffect(() => {
+
+    const interval = setInterval(() => {
+      fetchData();
+    }, 15000);
+
+    return () =>
+      clearInterval(interval);
+
+  }, []);
+
+  // 🔥 EDIT PACKAGE
   const handleEdit = (pkg: any) => {
+
     setForm({
       title: pkg.title,
       description: pkg.description,
@@ -151,73 +240,103 @@ export default function AdminDashboard() {
     });
   };
 
+  // 🔥 MENU
   const menus = [
     {
       id: "dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
+      count: analytics.total_bookings,
     },
+
     {
       id: "packages",
       label: "Packages",
       icon: Package,
+      count: packages.length,
     },
+
     {
       id: "bookings",
       label: "Bookings",
       icon: BookOpen,
+      count: bookings.length,
     },
+
     {
       id: "payments",
       label: "Payments",
       icon: CreditCard,
+      count: payments.length,
     },
+
     {
       id: "users",
       label: "Users",
       icon: Users,
+      count: users.length,
     },
   ];
 
+  // 🔥 RECENT BOOKINGS
+  const recentBookings = useMemo(() => {
+
+    return bookings
+      ?.slice(0, 5);
+
+  }, [bookings]);
+
   return (
-    <div className="flex min-h-screen bg-[#050816] text-white overflow-hidden">
+    <div className="flex min-h-screen bg-[#040816] text-white overflow-hidden">
 
-      {/* 🔥 BACKGROUND */}
-      <div className="fixed inset-0 -z-10">
+      {/* 🔥 PREMIUM BACKGROUND */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
 
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-yellow-500/10 blur-[120px]" />
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-yellow-500/10 blur-[140px]" />
 
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-yellow-300/10 blur-[120px]" />
+        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-yellow-300/10 blur-[140px]" />
+
+        <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-blue-500/10 blur-[120px]" />
 
       </div>
 
       {/* 🔥 MOBILE SIDEBAR */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl md:hidden">
+
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-2xl md:hidden">
 
           <div className="w-72 h-full bg-[#0B1120] border-r border-white/10 p-6">
 
+            {/* TOP */}
             <div className="flex justify-between items-center mb-10">
 
               <div>
+
                 <h1 className="text-2xl font-black text-yellow-400">
                   M.Y HAMDALA
                 </h1>
 
                 <p className="text-xs text-gray-500">
-                  TRAVEL ADMIN
+                  Travel ERP System
                 </p>
+
               </div>
 
-              <button onClick={() => setMobileOpen(false)}>
+              <button
+                onClick={() =>
+                  setMobileOpen(false)
+                }
+              >
                 <X />
               </button>
 
             </div>
 
+            {/* NAV */}
             <nav className="space-y-3">
 
               {menus.map((item) => {
+
                 const Icon = item.icon;
 
                 return (
@@ -227,15 +346,25 @@ export default function AdminDashboard() {
                       setTab(item.id);
                       setMobileOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 ${
+                    className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all ${
                       tab === item.id
                         ? "bg-yellow-500 text-black"
-                        : "hover:bg-white/10 text-gray-300"
+                        : "hover:bg-white/10"
                     }`}
                   >
-                    <Icon size={20} />
 
-                    {item.label}
+                    <div className="flex items-center gap-3">
+
+                      <Icon size={18} />
+
+                      {item.label}
+
+                    </div>
+
+                    <span className="text-xs opacity-70">
+                      {item.count}
+                    </span>
+
                   </button>
                 );
               })}
@@ -245,9 +374,10 @@ export default function AdminDashboard() {
           </div>
 
         </div>
+
       )}
 
-      {/* 🔥 SIDEBAR */}
+      {/* 🔥 DESKTOP SIDEBAR */}
       <aside className="hidden md:flex w-80 bg-white/[0.03] backdrop-blur-3xl border-r border-white/10 flex-col justify-between p-6">
 
         {/* TOP */}
@@ -256,9 +386,9 @@ export default function AdminDashboard() {
           {/* LOGO */}
           <div className="mb-10">
 
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-4">
 
-              <div className="w-14 h-14 rounded-2xl bg-yellow-500 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-3xl bg-yellow-500 flex items-center justify-center shadow-2xl">
 
                 <Plane className="text-black" />
 
@@ -281,11 +411,11 @@ export default function AdminDashboard() {
           </div>
 
           {/* ADMIN CARD */}
-          <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-300/5 border border-yellow-500/20 rounded-3xl p-5 mb-10">
+          <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-300/5 border border-yellow-500/20 rounded-[28px] p-5 mb-10">
 
             <div className="flex items-center gap-4">
 
-              <div className="w-16 h-16 rounded-2xl bg-yellow-500 text-black flex items-center justify-center font-black text-2xl">
+              <div className="w-16 h-16 rounded-2xl bg-yellow-500 text-black flex items-center justify-center text-2xl font-black">
                 A
               </div>
 
@@ -313,16 +443,19 @@ export default function AdminDashboard() {
 
           </div>
 
-          {/* NAVIGATION */}
+          {/* NAV */}
           <nav className="space-y-3">
 
             {menus.map((item) => {
+
               const Icon = item.icon;
 
               return (
                 <button
                   key={item.id}
-                  onClick={() => setTab(item.id)}
+                  onClick={() =>
+                    setTab(item.id)
+                  }
                   className={`group w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 ${
                     tab === item.id
                       ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-2xl"
@@ -340,9 +473,17 @@ export default function AdminDashboard() {
 
                   </div>
 
-                  <span className="opacity-50 group-hover:translate-x-1 transition">
-                    →
-                  </span>
+                  <div className="flex items-center gap-3">
+
+                    <span className="text-xs opacity-70">
+                      {item.count}
+                    </span>
+
+                    <span className="opacity-40 group-hover:translate-x-1 transition">
+                      →
+                    </span>
+
+                  </div>
 
                 </button>
               );
@@ -360,7 +501,7 @@ export default function AdminDashboard() {
 
             <div className="flex items-center gap-3">
 
-              <ShieldCheck className="text-green-400" />
+              <Wifi className="text-green-400" />
 
               <div>
 
@@ -369,7 +510,7 @@ export default function AdminDashboard() {
                 </p>
 
                 <p className="text-xs text-gray-400">
-                  Secure travel management active
+                  Live travel operations active
                 </p>
 
               </div>
@@ -383,9 +524,11 @@ export default function AdminDashboard() {
             onClick={handleLogout}
             className="w-full bg-red-500 hover:bg-red-600 transition-all py-4 rounded-2xl font-semibold flex items-center justify-center gap-2"
           >
+
             <LogOut size={18} />
 
             Logout
+
           </button>
 
           <p className="text-center text-xs text-gray-500 mt-6">
@@ -408,7 +551,9 @@ export default function AdminDashboard() {
             <div className="flex items-center gap-4">
 
               <button
-                onClick={() => setMobileOpen(true)}
+                onClick={() =>
+                  setMobileOpen(true)
+                }
                 className="md:hidden"
               >
                 <Menu />
@@ -416,12 +561,12 @@ export default function AdminDashboard() {
 
               <div>
 
-                <h1 className="text-3xl font-bold capitalize">
+                <h1 className="text-3xl font-black capitalize">
                   {tab}
                 </h1>
 
                 <p className="text-sm text-gray-400">
-                  Manage bookings, payments and packages
+                  Live premium travel management
                 </p>
 
               </div>
@@ -451,9 +596,11 @@ export default function AdminDashboard() {
                 onClick={fetchData}
                 className="bg-yellow-500 hover:bg-yellow-400 text-black px-5 py-3 rounded-2xl font-semibold flex items-center gap-2 transition-all"
               >
+
                 <RefreshCw size={18} />
 
                 Refresh
+
               </button>
 
               {/* NOTIFICATION */}
@@ -487,12 +634,193 @@ export default function AdminDashboard() {
           ) : (
 
             <>
-              {/* DASHBOARD */}
+
+              {/* 🔥 QUICK LIVE OVERVIEW */}
+              <div className="grid md:grid-cols-4 gap-5 mb-10">
+
+                <div className="bg-[#121826] border border-white/10 rounded-3xl p-5">
+
+                  <div className="flex justify-between">
+
+                    <div>
+
+                      <p className="text-gray-400 text-sm">
+                        Packages
+                      </p>
+
+                      <h2 className="text-4xl font-black mt-2">
+                        {packages.length}
+                      </h2>
+
+                    </div>
+
+                    <Package className="text-yellow-400" />
+
+                  </div>
+
+                </div>
+
+                <div className="bg-[#121826] border border-white/10 rounded-3xl p-5">
+
+                  <div className="flex justify-between">
+
+                    <div>
+
+                      <p className="text-gray-400 text-sm">
+                        Users
+                      </p>
+
+                      <h2 className="text-4xl font-black mt-2">
+                        {users.length}
+                      </h2>
+
+                    </div>
+
+                    <Users className="text-blue-400" />
+
+                  </div>
+
+                </div>
+
+                <div className="bg-[#121826] border border-white/10 rounded-3xl p-5">
+
+                  <div className="flex justify-between">
+
+                    <div>
+
+                      <p className="text-gray-400 text-sm">
+                        Payments
+                      </p>
+
+                      <h2 className="text-4xl font-black mt-2">
+                        {payments.length}
+                      </h2>
+
+                    </div>
+
+                    <CreditCard className="text-green-400" />
+
+                  </div>
+
+                </div>
+
+                <div className="bg-[#121826] border border-white/10 rounded-3xl p-5">
+
+                  <div className="flex justify-between">
+
+                    <div>
+
+                      <p className="text-gray-400 text-sm">
+                        Revenue
+                      </p>
+
+                      <h2 className="text-3xl font-black mt-2 text-yellow-400">
+                        ₦
+                        {Number(
+                          analytics.revenue
+                        ).toLocaleString()}
+                      </h2>
+
+                    </div>
+
+                    <DollarSign className="text-yellow-400" />
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* 🔥 DASHBOARD */}
               {tab === "dashboard" && (
-                <DashboardStats analytics={analytics} />
+                <div className="space-y-8">
+
+                  <DashboardStats
+                    analytics={analytics}
+                  />
+
+                  {/* 🔥 RECENT BOOKINGS */}
+                  <div className="bg-[#121826] border border-white/10 rounded-[32px] p-6">
+
+                    <div className="flex items-center justify-between mb-6">
+
+                      <div>
+
+                        <h2 className="text-2xl font-black">
+                          Recent Bookings
+                        </h2>
+
+                        <p className="text-gray-400 text-sm">
+                          Latest customer activities
+                        </p>
+
+                      </div>
+
+                      <Activity className="text-yellow-400" />
+
+                    </div>
+
+                    <div className="space-y-4">
+
+                      {recentBookings.map(
+                        (b: any) => (
+
+                          <div
+                            key={b.id}
+                            className="flex items-center justify-between bg-black/20 rounded-2xl p-4 border border-white/5"
+                          >
+
+                            <div className="flex items-center gap-4">
+
+                              <div className="w-12 h-12 rounded-2xl bg-yellow-500 text-black flex items-center justify-center font-black">
+                                {
+                                  b.first_name?.charAt(
+                                    0
+                                  )
+                                }
+                              </div>
+
+                              <div>
+
+                                <h3 className="font-semibold">
+                                  {b.first_name}{" "}
+                                  {b.surname}
+                                </h3>
+
+                                <p className="text-sm text-gray-400">
+                                  {
+                                    b.passport_number
+                                  }
+                                </p>
+
+                              </div>
+
+                            </div>
+
+                            <div
+                              className={`px-3 py-1 rounded-full text-xs ${
+                                b.status ===
+                                "paid"
+                                  ? "bg-green-500/20 text-green-400"
+                                  : "bg-yellow-500/20 text-yellow-400"
+                              }`}
+                            >
+                              {b.status}
+                            </div>
+
+                          </div>
+
+                        )
+                      )}
+
+                    </div>
+
+                  </div>
+
+                </div>
               )}
 
-              {/* PACKAGES */}
+              {/* 🔥 PACKAGES */}
               {tab === "packages" && (
                 <div className="space-y-8">
 
@@ -513,20 +841,25 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              {/* BOOKINGS */}
+              {/* 🔥 BOOKINGS */}
               {tab === "bookings" && (
-                <BookingList bookings={bookings} />
+                <BookingList
+                  bookings={bookings}
+                />
               )}
 
-              {/* USERS */}
+              {/* 🔥 USERS */}
               {tab === "users" && (
                 <UserList users={users} />
               )}
 
-              {/* PAYMENTS */}
+              {/* 🔥 PAYMENTS */}
               {tab === "payments" && (
-                <PaymentList payments={payments} />
+                <PaymentList
+                  payments={payments}
+                />
               )}
+
             </>
 
           )}
