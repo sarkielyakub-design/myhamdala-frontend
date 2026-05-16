@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  LayoutDashboard,
+  Package,
+  BookOpen,
+  RefreshCw,
+  LogOut,
+  ShieldCheck,
+  Search,
+} from "lucide-react";
+
 import API from "@/lib/api";
 
 import CreatePackage from "./components/admin/CreatePackage";
@@ -13,6 +23,7 @@ export default function AdminDashboard() {
 
   const [packages, setPackages] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
+
   const [analytics, setAnalytics] = useState({
     total_bookings: 0,
     paid: 0,
@@ -25,12 +36,13 @@ export default function AdminDashboard() {
   const [form, setForm] = useState<any>({});
   const [editingId, setEditingId] = useState<number | null>(null);
 
+  // 🔥 LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
-  // ✅ SAFE EXTRACTOR
+  // 🔥 SAFE DATA
   const safeData = (res: any, fallback: any) => {
     if (!res) return fallback;
     if (res.data?.data !== undefined) return res.data.data;
@@ -38,7 +50,7 @@ export default function AdminDashboard() {
     return fallback;
   };
 
-  // ✅ SINGLE SOURCE OF TRUTH
+  // 🔥 FETCH
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -53,6 +65,7 @@ export default function AdminDashboard() {
       setBookings(safeData(bookRes, []));
 
       const analyticsData = safeData(analyticsRes, {});
+
       setAnalytics({
         total_bookings: analyticsData.total_bookings || 0,
         paid: analyticsData.paid || 0,
@@ -60,14 +73,14 @@ export default function AdminDashboard() {
         conversion_rate: analyticsData.conversion_rate || 0,
       });
 
-      console.log("📊 ANALYTICS:", analyticsData);
-      console.log("📘 BOOKINGS:", bookRes);
     } catch (err: any) {
-      console.error("🔥 FETCH ERROR:", err);
+      console.error(err);
 
       if (err?.response?.status === 401) {
         alert("Session expired");
+
         localStorage.removeItem("token");
+
         window.location.href = "/login";
       }
     } finally {
@@ -75,12 +88,12 @@ export default function AdminDashboard() {
     }
   };
 
-  // ✅ LOAD ONCE
+  // 🔥 LOAD
   useEffect(() => {
     fetchData();
   }, []);
 
-  // ✅ EDIT
+  // 🔥 EDIT
   const handleEdit = (pkg: any) => {
     setForm({
       title: pkg.title,
@@ -99,109 +112,183 @@ export default function AdminDashboard() {
     });
 
     setEditingId(pkg.id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   return (
-    <div className="flex min-h-screen bg-[#0B0F19] text-white">
+    <div className="flex min-h-screen bg-gradient-to-br from-[#050816] via-[#0B1120] to-black text-white">
 
-      {/* 🔥 SIDEBAR */}
-      <aside className="w-64 bg-[#121826] border-r border-white/10 p-6 flex flex-col justify-between">
+      {/* SIDEBAR */}
+      <aside className="hidden md:flex w-72 bg-black/40 backdrop-blur-2xl border-r border-white/10 p-6 flex-col justify-between">
 
+        {/* TOP */}
         <div>
-          <h2 className="text-2xl font-bold text-yellow-400 mb-2">
-            M.Y HAMDALA
-          </h2>
 
-          <p className="text-xs text-gray-500 mb-8">
-            TRAVEL AND TOURS
-          </p>
+          {/* LOGO */}
+          <div className="mb-10">
 
+            <h1 className="text-3xl font-extrabold text-yellow-400">
+              M.Y HAMDALA
+            </h1>
+
+            <p className="text-gray-500 text-sm mt-1">
+              TRAVEL & TOUR ADMIN
+            </p>
+
+          </div>
+
+          {/* PROFILE */}
+          <div className="bg-white/5 border border-white/10 rounded-3xl p-5 mb-8">
+
+            <div className="flex items-center gap-4">
+
+              <div className="w-14 h-14 rounded-full bg-yellow-500 text-black flex items-center justify-center font-bold text-xl">
+                A
+              </div>
+
+              <div>
+                <h3 className="font-semibold">
+                  Administrator
+                </h3>
+
+                <p className="text-xs text-gray-400">
+                  Super Admin
+                </p>
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* NAVIGATION */}
           <nav className="space-y-3">
 
+            {/* DASHBOARD */}
             <button
               onClick={() => setTab("dashboard")}
-              className={`w-full text-left px-4 py-2 rounded-lg transition ${
+              className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 ${
                 tab === "dashboard"
-                  ? "bg-yellow-500 text-black"
+                  ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-lg"
                   : "hover:bg-white/10 text-gray-300"
               }`}
             >
-              📊 Dashboard
+              <LayoutDashboard size={20} />
+              Dashboard
             </button>
 
+            {/* PACKAGES */}
             <button
               onClick={() => setTab("packages")}
-              className={`w-full text-left px-4 py-2 rounded-lg transition ${
+              className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 ${
                 tab === "packages"
-                  ? "bg-yellow-500 text-black"
+                  ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-lg"
                   : "hover:bg-white/10 text-gray-300"
               }`}
             >
-              📦 Packages
+              <Package size={20} />
+              Packages
             </button>
 
+            {/* BOOKINGS */}
             <button
               onClick={() => setTab("bookings")}
-              className={`w-full text-left px-4 py-2 rounded-lg transition ${
+              className={`w-full flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 ${
                 tab === "bookings"
-                  ? "bg-yellow-500 text-black"
+                  ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-lg"
                   : "hover:bg-white/10 text-gray-300"
               }`}
             >
-              📘 Bookings
+              <BookOpen size={20} />
+              Bookings
             </button>
 
           </nav>
+
         </div>
 
-        <div className="space-y-4">
+        {/* BOTTOM */}
+        <div>
+
+          <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-4 mb-5 flex items-center gap-3">
+
+            <ShieldCheck className="text-green-400" />
+
+            <div>
+              <p className="text-sm font-medium text-green-400">
+                System Active
+              </p>
+
+              <p className="text-xs text-gray-400">
+                Secure connection enabled
+              </p>
+            </div>
+
+          </div>
 
           <button
             onClick={handleLogout}
-            className="w-full bg-red-500 hover:bg-red-600 transition py-2 rounded-lg text-sm font-semibold"
+            className="w-full bg-red-500 hover:bg-red-600 transition-all duration-300 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2 shadow-lg"
           >
-            🚪 Logout
+            <LogOut size={18} />
+            Logout
           </button>
 
-          <div className="text-center text-xs text-gray-500">
-            System Secure • Online
-          </div>
-
-          <div className="text-xs text-gray-500 text-center">
+          <p className="text-center text-xs text-gray-500 mt-6">
             ©️ {new Date().getFullYear()} M.Y HAMDALA
-          </div>
+          </p>
 
         </div>
 
       </aside>
 
-      {/* 🔥 MAIN */}
-      <main className="flex-1 p-8">
+      {/* MAIN */}
+      <main className="flex-1 p-5 md:p-10 overflow-auto">
 
         {/* HEADER */}
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-10">
 
+          {/* TITLE */}
           <div>
-            <h1 className="text-3xl font-bold capitalize">{tab}</h1>
-            <p className="text-gray-400 text-sm">
-              Manage your travel system
+
+            <h1 className="text-4xl font-bold capitalize">
+              {tab}
+            </h1>
+
+            <p className="text-gray-400 mt-2">
+              Manage bookings, packages and travel operations
             </p>
+
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* ACTIONS */}
+          <div className="flex flex-col sm:flex-row gap-4">
 
-            <div className="bg-[#121826] px-4 py-2 rounded-lg border border-white/10">
-              <span className="text-green-400 text-sm">
-                ● System Active
-              </span>
+            {/* SEARCH */}
+            <div className="relative">
+
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500"
+                size={18}
+              />
+
+              <input
+                placeholder="Search..."
+                className="bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3 w-full sm:w-72 outline-none focus:border-yellow-500 transition"
+              />
+
             </div>
 
+            {/* REFRESH */}
             <button
               onClick={fetchData}
-              className="bg-yellow-500 text-black px-4 py-2 rounded-lg text-sm font-semibold hover:opacity-90"
+              className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-3 rounded-2xl font-semibold flex items-center justify-center gap-2 shadow-lg transition-all duration-300"
             >
-              🔄 Refresh
+              <RefreshCw size={18} />
+              Refresh
             </button>
 
           </div>
@@ -210,19 +297,29 @@ export default function AdminDashboard() {
 
         {/* LOADING */}
         {loading ? (
-          <div className="flex items-center justify-center h-64 text-gray-400">
-            Loading dashboard...
+
+          <div className="flex flex-col items-center justify-center h-[60vh]">
+
+            <div className="w-14 h-14 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin" />
+
+            <p className="mt-4 text-gray-400">
+              Loading Dashboard...
+            </p>
+
           </div>
+
         ) : (
+
           <>
+            {/* DASHBOARD */}
             {tab === "dashboard" && (
               <DashboardStats analytics={analytics} />
             )}
 
+            {/* PACKAGES */}
             {tab === "packages" && (
-              <div className="space-y-6">
+              <div className="space-y-8">
 
-                {/* 🔥 PASS EDIT STATE */}
                 <CreatePackage
                   onCreated={fetchData}
                   form={form}
@@ -231,7 +328,6 @@ export default function AdminDashboard() {
                   setEditingId={setEditingId}
                 />
 
-                {/* 🔥 PASS onEdit */}
                 <PackageList
                   packages={packages}
                   refresh={fetchData}
@@ -241,9 +337,11 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {/* BOOKINGS */}
             {tab === "bookings" && (
               <BookingList bookings={bookings} />
             )}
+
           </>
         )}
 
@@ -251,8 +349,4 @@ export default function AdminDashboard() {
 
     </div>
   );
-}
-
-function setError(arg0: string) {
-  throw new Error("Function not implemented.");
 }

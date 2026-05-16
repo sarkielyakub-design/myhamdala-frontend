@@ -1,9 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import API from "@/lib/api";
 
-export default function CreatePackage({ onCreated }: any) {
+import {
+  Upload,
+  Plane,
+  Hotel,
+  CalendarDays,
+  Clock3,
+  Users,
+  Star,
+  Trash2,
+  Sparkles,
+} from "lucide-react";
+
+export default function CreatePackage({
+  onCreated,
+}: any) {
+
   const initialForm = {
     title: "",
     description: "",
@@ -14,20 +28,23 @@ export default function CreatePackage({ onCreated }: any) {
     departure_date: "",
     return_date: "",
     hotel_name: "",
-    hotel_rating: "3",
-    category: "standard",
+    hotel_rating: "5",
+    category: "premium",
     duration_days: "",
     total_slots: "",
     booked_slots: "0",
   };
 
   const [form, setForm] = useState(initialForm);
+
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+
   const [loading, setLoading] = useState(false);
 
-  // 📸 UPLOAD
+  // 🔥 IMAGE UPLOAD
   const handleUpload = (files: FileList) => {
+
     const arr = Array.from(files);
 
     setImages(arr);
@@ -39,419 +56,581 @@ export default function CreatePackage({ onCreated }: any) {
     setPreviews(previewUrls);
   };
 
-  // ❌ REMOVE IMAGE
+  // 🔥 REMOVE
   const removeImage = (index: number) => {
+
     URL.revokeObjectURL(previews[index]);
 
-    setImages((prev) => prev.filter((_, i) => i !== index));
-    setPreviews((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) =>
+      prev.filter((_, i) => i !== index)
+    );
+
+    setPreviews((prev) =>
+      prev.filter((_, i) => i !== index)
+    );
   };
 
-  /// 🚀 CREATE PACKAGE
-  const createPackage = async (e?: any) => {
-  e?.preventDefault();
+  // 🔥 CREATE PACKAGE
+  const createPackage = async () => {
 
-  try {
-    setLoading(true);
+    try {
 
-    const token = localStorage.getItem("token");
+      setLoading(true);
 
-    if (!token) {
-      alert("❌ Not authenticated");
-      window.location.href = "/login";
-      return;
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("Not authenticated");
+        return;
+      }
+
+      const safeForm = {
+        title: form.title || "Untitled",
+        description: form.description || "No description",
+        price: Number(form.price) || 0,
+
+        flight_name: form.flight_name || "",
+        flight_from: form.flight_from || "",
+        flight_to: form.flight_to || "",
+
+        departure_date: form.departure_date || "",
+        return_date: form.return_date || "",
+
+        hotel_name: form.hotel_name || "",
+        hotel_rating: form.hotel_rating || "5",
+
+        category: form.category || "premium",
+
+        duration_days: Number(form.duration_days) || 0,
+
+        total_slots: Number(form.total_slots) || 0,
+
+        booked_slots: 0,
+      };
+
+      const formData = new FormData();
+
+      Object.entries(safeForm).forEach(([key, value]) => {
+        formData.append(key, String(value));
+      });
+
+      if (images.length > 0) {
+        formData.append("file", images[0]);
+      }
+
+      const res = await fetch(
+        "https://travel-backend-oo52.onrender.com/api/v1/admin/packages",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data?.detail || "Creation failed");
+        return;
+      }
+
+      alert("✅ Package Created");
+
+      setForm(initialForm);
+
+      setImages([]);
+      setPreviews([]);
+
+      if (onCreated) {
+        onCreated(data);
+      }
+
+    } catch (err) {
+
+      console.error(err);
+
+      alert("Something went wrong");
+
+    } finally {
+
+      setLoading(false);
+
     }
+  };
 
-    // 🔥 SAFE DATA (NO MORE 422 EVER)
-    const safeForm = {
-      title: form.title?.trim() || "Untitled Package",
-      description: form.description?.trim() || "No description",
-      price: Number(form.price) || 0,
-
-      flight_name: form.flight_name || "",
-      flight_from: form.flight_from || "",
-      flight_to: form.flight_to || "",
-
-      departure_date: form.departure_date || "",
-      return_date: form.return_date || "",
-
-      hotel_name: form.hotel_name || "",
-      hotel_rating: form.hotel_rating || "3",
-
-      category: form.category || "standard",
-
-      duration_days: Number(form.duration_days) || 0,
-      total_slots: Number(form.total_slots) || 0,
-      booked_slots: 0,
-    };
-
-    const formData = new FormData();
-
-    // ✅ APPEND ALL FIELDS CLEANLY
-    Object.entries(safeForm).forEach(([key, value]) => {
-      formData.append(key, String(value));
-    });
-
-    // 📸 FILE
-    if (images.length > 0) {
-      formData.append("file", images[0]);
-    }
-
-    // 🔍 DEBUG (VERY IMPORTANT)
-    console.log("🔥 FINAL FORM DATA:");
-    for (let [k, v] of formData.entries()) {
-      console.log(k, v);
-    }
-
-    // 🚀 REQUEST
-    const res = await fetch(
- "https://travel-backend-oo52.onrender.com/api/v1/admin/packages",
-  {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  }
-);
-
-let data: any = {};
-
-try {
-  data = await res.json();
-} catch (e) {
-  console.warn("⚠️ Response is not JSON");
-}
-
-if (!res.ok) {
-  console.error("🔥 BACKEND ERROR:", data);
-
-  // 🔐 AUTH ERROR
-  if (res.status === 401) {
-    alert("Session expired. Login again.");
-    localStorage.removeItem("token");
-    window.location.href = "/login";
-    return;
-  }
-
-  // 🧠 VALIDATION ERROR (422)
-  if (res.status === 422) {
-    alert(
-      data?.detail
-        ? JSON.stringify(data.detail, null, 2)
-        : "Validation error (422)"
-    );
-    return;
-  }
-
-  // ❌ OTHER ERRORS
-  alert(data?.detail || "Request failed");
-  return;
-}
-
-/// ✅ SUCCESS
-alert("✅ Package Created Successfully");
-
-// ✅ GET NEW PACKAGE FROM RESPONSE
-const newPackage = data?.data;
-
-// 🔄 SEND TO PARENT (IMPORTANT)
-if (onCreated && newPackage) {
-  onCreated(newPackage);
-}
-
-// 🔄 RESET FORM (ONLY ONCE)
-setForm(initialForm);
-setImages([]);
-setPreviews([]);
-
-   
-
-  } catch (err: any) {
-  console.log("🔥 FULL ERROR:", err);
-
-  // 🔥 HANDLE FASTAPI VALIDATION ERRORS PROPERLY
-  if (err?.detail && Array.isArray(err.detail)) {
-    const messages = err.detail
-      .map((e: any) => {
-        const field = e.loc?.join(" → ") || "field";
-        return `❌ ${field}: ${e.msg}`;
-      })
-      .join("\n");
-
-    alert(messages);
-  } else if (err?.detail) {
-    // 🔥 NORMAL ERROR STRING
-    alert(`❌ ${err.detail}`);
-  } else {
-    alert("❌ Something went wrong");
-  }
-}
-finally {
-  setLoading(false);
-}
-};
   return (
-    <div className="bg-[#121826] p-6 rounded-2xl mb-8 border border-white/10 shadow-lg space-y-6">
+    <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[#121826]/80 backdrop-blur-2xl shadow-2xl p-8">
 
-      <h2 className="text-xl font-semibold text-yellow-400">
-        Create Package
-      </h2>
+      {/* GLOW */}
+      <div className="absolute top-0 right-0 w-72 h-72 bg-yellow-500/10 blur-3xl rounded-full" />
 
-      {/* BASIC */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <input
-  placeholder="Title"
-  value={form.title}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, title: value }));
-  }}
-  className="input"
-/>
+      {/* HEADER */}
+      <div className="relative z-10 flex flex-col lg:flex-row justify-between gap-6 mb-10">
 
-<input
-  type="number"
-  placeholder="Price (₦)"
-  value={form.price}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, price: value }));
-  }}
-  className="input"
-/>
+        <div>
+
+          <div className="flex items-center gap-3 mb-4">
+
+            <div className="w-14 h-14 rounded-2xl bg-yellow-500 text-black flex items-center justify-center shadow-lg">
+              <Sparkles size={28} />
+            </div>
+
+            <div>
+
+              <h2 className="text-3xl font-bold text-yellow-400">
+                Create Travel Package
+              </h2>
+
+              <p className="text-gray-400">
+                Build premium Umrah & Hajj experiences
+              </p>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* CATEGORY BADGE */}
+        <div className="bg-green-500/10 border border-green-500/20 rounded-2xl px-5 py-4 h-fit">
+
+          <p className="text-sm text-gray-400">
+            Current Package Type
+          </p>
+
+          <h3 className="text-green-400 font-bold uppercase mt-1">
+            {form.category}
+          </h3>
+
+        </div>
+
       </div>
 
-      {/* DESCRIPTION */}
-      <textarea
-  placeholder="Description"
-  value={form.description}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, description: value }));
-  }}
-  className="input"
-/>
-      {/* FLIGHT */}
-      <div className="grid md:grid-cols-3 gap-4">
-       <select
-  value={form.flight_name}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, flight_name: value }));
-  }}
-  className="input"
->
-          <option value="">Airline</option>
-          <option>Saudi Airline</option>
-          <option>Emirates</option>
-          <option>Qatar Airways</option>
-          <option>EgyptAir</option>
-          <option>Air Peace</option>
-        </select>
+      {/* FORM */}
+      <div className="relative z-10 space-y-8">
 
-        <input
-  placeholder="From"
-  value={form.flight_from}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, flight_from: value }));
-  }}
-  className="input"
-/>
+        {/* BASIC */}
+        <div className="grid md:grid-cols-2 gap-5">
 
-<input
-  placeholder="To"
-  value={form.flight_to}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, flight_to: value }));
-  }}
-  className="input"
-/>
-      </div>
+          <div>
+            <label className="label">
+              Package Title
+            </label>
 
-      {/* DATES */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <input
-  type="date"
-  value={form.departure_date}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, departure_date: value }));
-  }}
-  className="input"
-/>
+            <input
+              placeholder="Premium Ramadan Umrah"
+              value={form.title}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  title: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
 
-<input
-  type="date"
-  value={form.return_date}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, return_date: value }));
-  }}
-  className="input"
-/>
-      </div>
+          <div>
+            <label className="label">
+              Price (₦)
+            </label>
 
-      {/* HOTEL */}
-      <div className="grid md:grid-cols-2 gap-4">
-        <input
-  placeholder="Hotel Name"
-  value={form.hotel_name}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, hotel_name: value }));
-  }}
-  className="input"
-/>
+            <input
+              type="number"
+              placeholder="2500000"
+              value={form.price}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  price: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
 
-<select
-  value={form.hotel_rating}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, hotel_rating: value }));
-  }}
-  className="input"
->
-          <option value="3">3 Star</option>
-          <option value="4">4 Star</option>
-          <option value="5">5 Star</option>
-        </select>
-      </div>
+        </div>
 
-      {/* CATEGORY */}
-      <div className="flex gap-3">
-        {["premium", "standard", "budget"].map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() =>
-              setForm({ ...form, category: cat })
+        {/* DESCRIPTION */}
+        <div>
+
+          <label className="label">
+            Description
+          </label>
+
+          <textarea
+            rows={4}
+            placeholder="Describe package..."
+            value={form.description}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                description: e.target.value,
+              })
             }
-            className={`px-4 py-2 rounded-full ${
-              form.category === cat
-                ? "bg-yellow-500 text-black"
-                : "bg-white/10"
-            }`}
-          >
-            {cat.toUpperCase()}
-          </button>
-        ))}
-      </div>
+            className="input"
+          />
 
-      {/* SLOTS + PROGRESS */}
-<div className="space-y-3">
+        </div>
 
-  <div className="grid md:grid-cols-3 gap-4">
+        {/* FLIGHT */}
+        <div className="grid md:grid-cols-3 gap-5">
 
-    <input
-  type="number"
-  placeholder="Duration (days)"
-  value={form.duration_days}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, duration_days: value }));
-  }}
-  className="input"
-/>
+          <div>
+            <label className="label flex items-center gap-2">
+              <Plane size={16} />
+              Airline
+            </label>
 
-<input
-  type="number"
-  placeholder="Total Slots"
-  value={form.total_slots}
-  onChange={(e) => {
-    const value = e.target.value;
-    setForm((prev) => ({ ...prev, total_slots: value }));
-  }}
-  className="input"
-/>
+            <select
+              value={form.flight_name}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  flight_name: e.target.value,
+                })
+              }
+              className="input"
+            >
+              <option>Saudi Airline</option>
+              <option>Qatar Airways</option>
+              <option>Emirates</option>
+              <option>EgyptAir</option>
+              <option>Air Peace</option>
+            </select>
 
-    <input
-      type="number"
-      value={form.booked_slots || "0"}
-      disabled
-      className="input opacity-50"
-    />
+          </div>
 
-  </div>
+          <div>
+            <label className="label">
+              Flight From
+            </label>
 
-  {/* 🔥 PROGRESS BAR */}
-  <div className="mt-2">
-    <div className="flex justify-between text-sm text-gray-400 mb-1">
-      <span>🪑 Seats</span>
-      <span>
-        {form.booked_slots || 0} / {form.total_slots || 0}
-      </span>
-    </div>
+            <input
+              placeholder="Kano"
+              value={form.flight_from}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  flight_from: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
 
-    <div className="w-full bg-white/10 rounded-full h-2">
-      <div
-        className="bg-yellow-500 h-2 rounded-full transition-all"
-        style={{
-          width: `${
-            form.total_slots
-              ? (Number(form.booked_slots) /
-                  Number(form.total_slots)) *
-                100
-              : 0
-          }%`,
-        }}
-      />
-    </div>
-  </div>
+          <div>
+            <label className="label">
+              Flight To
+            </label>
 
-</div>
-      {/* IMAGE */}
-      <div className="border-2 border-dashed border-yellow-400/30 p-4 rounded-xl">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) =>
-            e.target.files && handleUpload(e.target.files)
-          }
-        />
+            <input
+              placeholder="Madinah"
+              value={form.flight_to}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  flight_to: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
 
-        <div className="grid grid-cols-3 gap-3 mt-3">
-          {previews.map((p, i) => (
-            <div key={i} className="relative">
-              <img
-                src={p}
-                className="h-24 w-full object-cover rounded"
-              />
+        </div>
+
+        {/* DATES */}
+        <div className="grid md:grid-cols-2 gap-5">
+
+          <div>
+            <label className="label flex items-center gap-2">
+              <CalendarDays size={16} />
+              Departure Date
+            </label>
+
+            <input
+              type="date"
+              value={form.departure_date}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  departure_date: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">
+              Return Date
+            </label>
+
+            <input
+              type="date"
+              value={form.return_date}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  return_date: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
+
+        </div>
+
+        {/* HOTEL */}
+        <div className="grid md:grid-cols-2 gap-5">
+
+          <div>
+            <label className="label flex items-center gap-2">
+              <Hotel size={16} />
+              Hotel Name
+            </label>
+
+            <input
+              placeholder="Swissotel Makkah"
+              value={form.hotel_name}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  hotel_name: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label flex items-center gap-2">
+              <Star size={16} />
+              Hotel Rating
+            </label>
+
+            <select
+              value={form.hotel_rating}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  hotel_rating: e.target.value,
+                })
+              }
+              className="input"
+            >
+              <option value="3">3 Star</option>
+              <option value="4">4 Star</option>
+              <option value="5">5 Star</option>
+            </select>
+
+          </div>
+
+        </div>
+
+        {/* CATEGORY */}
+        <div>
+
+          <label className="label mb-4 block">
+            Package Category
+          </label>
+
+          <div className="flex flex-wrap gap-4">
+
+            {["premium", "standard", "budget"].map((cat) => (
 
               <button
-                onClick={() => removeImage(i)}
-                className="absolute top-1 right-1 bg-red-500 px-2 rounded text-xs"
+                key={cat}
+                onClick={() =>
+                  setForm({
+                    ...form,
+                    category: cat,
+                  })
+                }
+                type="button"
+                className={`px-6 py-3 rounded-2xl font-semibold uppercase transition-all duration-300 ${
+                  form.category === cat
+                    ? "bg-yellow-500 text-black shadow-lg"
+                    : "bg-white/5 border border-white/10 hover:bg-white/10"
+                }`}
               >
-                ✕
+                {cat}
               </button>
-            </div>
-          ))}
+
+            ))}
+
+          </div>
+
         </div>
+
+        {/* SLOT */}
+        <div className="grid md:grid-cols-3 gap-5">
+
+          <div>
+            <label className="label flex items-center gap-2">
+              <Clock3 size={16} />
+              Duration
+            </label>
+
+            <input
+              type="number"
+              placeholder="14"
+              value={form.duration_days}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  duration_days: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label flex items-center gap-2">
+              <Users size={16} />
+              Total Slots
+            </label>
+
+            <input
+              type="number"
+              placeholder="100"
+              value={form.total_slots}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  total_slots: e.target.value,
+                })
+              }
+              className="input"
+            />
+          </div>
+
+          <div>
+            <label className="label">
+              Booked Slots
+            </label>
+
+            <input
+              value={form.booked_slots}
+              disabled
+              className="input opacity-50"
+            />
+          </div>
+
+        </div>
+
+        {/* IMAGE */}
+        <div>
+
+          <label className="label mb-4 block">
+            Upload Package Image
+          </label>
+
+          <div className="border-2 border-dashed border-yellow-500/20 rounded-3xl p-8 bg-black/20">
+
+            <div className="flex flex-col items-center text-center">
+
+              <div className="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center mb-5">
+                <Upload className="text-yellow-400" size={34} />
+              </div>
+
+              <h3 className="text-xl font-bold mb-2">
+                Upload Images
+              </h3>
+
+              <p className="text-gray-400 text-sm mb-6">
+                PNG, JPG, WEBP supported
+              </p>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  e.target.files &&
+                  handleUpload(e.target.files)
+                }
+              />
+
+            </div>
+
+            {/* PREVIEW */}
+            {previews.length > 0 && (
+
+              <div className="grid md:grid-cols-3 gap-5 mt-8">
+
+                {previews.map((p, i) => (
+
+                  <div
+                    key={i}
+                    className="relative group overflow-hidden rounded-2xl"
+                  >
+
+                    <img
+                      src={p}
+                      className="h-48 w-full object-cover group-hover:scale-105 transition duration-500"
+                    />
+
+                    <button
+                      onClick={() => removeImage(i)}
+                      className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 transition p-2 rounded-xl"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+
+                  </div>
+
+                ))}
+
+              </div>
+
+            )}
+
+          </div>
+
+        </div>
+
+        {/* BUTTON */}
+        <button
+          type="button"
+          onClick={createPackage}
+          disabled={loading}
+          className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:scale-[1.01] transition-all duration-300 py-5 rounded-3xl text-black font-bold text-lg shadow-2xl"
+        >
+          {loading
+            ? "Creating Package..."
+            : "Create Premium Package 🚀"}
+        </button>
+
       </div>
 
-      <button
-  type="button" // ✅ VERY IMPORTANT
-  onClick={createPackage}
-  disabled={loading}
-  className="w-full bg-yellow-500 py-3 rounded-xl text-black font-bold"
->
-  {loading ? "Creating..." : "Create Package 🚀"}
-</button>
+      {/* STYLE */}
       <style jsx>{`
         .input {
           width: 100%;
-          padding: 12px;
-          background: black;
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 8px;
+          padding: 16px;
+          background: rgba(255,255,255,0.03);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px;
+          color: white;
+          transition: 0.3s;
         }
+
         .input:focus {
-          border-color: #facc15;
           outline: none;
+          border-color: #facc15;
+          box-shadow: 0 0 0 4px rgba(250,204,21,0.1);
+        }
+
+        .label {
+          font-size: 14px;
+          color: #9ca3af;
+          margin-bottom: 10px;
         }
       `}</style>
+
     </div>
   );
 }
