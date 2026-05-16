@@ -305,6 +305,69 @@ export default function BookingList({ bookings }: any) {
       </div>
 
       {/* 🔥 MODAL */}
+      <div className="grid md:grid-cols-2 gap-5 mt-5">
+
+  <div className="glass-card">
+    <h3 className="section-title">
+      Passport Information
+    </h3>
+
+    <div className="space-y-2 text-sm">
+
+      <p>
+        <b>Passport Number:</b>{" "}
+        {selected.passport_number}
+      </p>
+
+      <p>
+        <b>Issue Date:</b>{" "}
+        {selected.passport_issue}
+      </p>
+
+      <p>
+        <b>Expiry Date:</b>{" "}
+        {selected.passport_expiry}
+      </p>
+
+      <p>
+        <b>Place of Issue:</b>{" "}
+        {selected.passport_issue_place}
+      </p>
+
+    </div>
+  </div>
+
+  <div className="glass-card">
+    <h3 className="section-title">
+      Travel Information
+    </h3>
+
+    <div className="space-y-2 text-sm">
+
+      <p>
+        <b>Occupation:</b>{" "}
+        {selected.occupation}
+      </p>
+
+      <p>
+        <b>Gender:</b>{" "}
+        {selected.gender}
+      </p>
+
+      <p>
+        <b>Marital Status:</b>{" "}
+        {selected.marital_status}
+      </p>
+
+      <p>
+        <b>Address:</b>{" "}
+        {selected.address}
+      </p>
+
+    </div>
+  </div>
+
+</div>
       {selected && (
 
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex justify-center items-center p-4 overflow-y-auto">
