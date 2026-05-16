@@ -32,7 +32,8 @@ import PaymentList from "./components/admin/PaymentList";
 
 export default function AdminDashboard() {
 
-  const [tab, setTab] = useState("dashboard");
+  const [tab, setTab] =
+    useState("dashboard");
 
   const [mobileOpen, setMobileOpen] =
     useState(false);
@@ -40,7 +41,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] =
     useState(true);
 
-  // 🔥 LIVE STATES
+  // 🔥 DATA STATES
   const [packages, setPackages] =
     useState<any[]>([]);
 
@@ -63,14 +64,16 @@ export default function AdminDashboard() {
       revenue: 0,
     });
 
-  // 🔥 EDITING
-  const [form, setForm] = useState<any>({});
+  // 🔥 PACKAGE EDITING
+  const [form, setForm] =
+    useState<any>({});
 
   const [editingId, setEditingId] =
     useState<number | null>(null);
 
   // 🔥 LOGOUT
   const handleLogout = () => {
+
     localStorage.removeItem("token");
 
     window.location.href = "/login";
@@ -81,6 +84,7 @@ export default function AdminDashboard() {
     res: any,
     fallback: any
   ) => {
+
     if (!res) return fallback;
 
     if (res.data?.data !== undefined) {
@@ -94,12 +98,16 @@ export default function AdminDashboard() {
     return fallback;
   };
 
-  // 🔥 FETCH EVERYTHING LIVE
-  const fetchData = async () => {
+  // 🔥 FETCH DATA
+  const fetchData = async (
+    showLoader: boolean = false
+  ): Promise<void> => {
 
     try {
 
-      setLoading(true);
+      if (showLoader) {
+        setLoading(true);
+      }
 
       const [
         pkgRes,
@@ -115,7 +123,6 @@ export default function AdminDashboard() {
         API.get("/admin/payments"),
       ]);
 
-      // 🔥 LIVE SET
       const packageData =
         safeData(pkgRes, []);
 
@@ -131,6 +138,7 @@ export default function AdminDashboard() {
       const analyticsData =
         safeData(analyticsRes, {});
 
+      // ✅ UPDATE STATES
       setPackages(packageData);
 
       setBookings(bookingData);
@@ -139,49 +147,59 @@ export default function AdminDashboard() {
 
       setPayments(paymentData);
 
+      // ✅ ANALYTICS
       setAnalytics({
         total_bookings:
-          analyticsData.total_bookings ||
+          analyticsData?.total_bookings ??
           bookingData.length,
 
         paid:
-          analyticsData.paid ||
+          analyticsData?.paid ??
           bookingData.filter(
             (b: any) =>
               b.status === "paid"
           ).length,
 
         pending:
-          analyticsData.pending ||
+          analyticsData?.pending ??
           bookingData.filter(
             (b: any) =>
               b.status !== "paid"
           ).length,
 
         conversion_rate:
-          analyticsData.conversion_rate ||
+          analyticsData?.conversion_rate ??
           0,
 
         revenue:
-          analyticsData.revenue ||
+          analyticsData?.revenue ??
           paymentData.reduce(
-            (sum: number, p: any) =>
-              sum + Number(p.amount || 0),
+            (
+              total: number,
+              payment: any
+            ) =>
+              total +
+              Number(
+                payment.amount || 0
+              ),
             0
           ),
       });
 
-    } catch (err: any) {
+    } catch (error: any) {
 
-      console.error(err);
+      console.error(
+        "FETCH ERROR:",
+        error
+      );
 
       if (
-        err?.response?.status === 401
+        error?.response?.status === 401
       ) {
 
-        alert("Session expired");
-
-        localStorage.removeItem("token");
+        localStorage.removeItem(
+          "token"
+        );
 
         window.location.href =
           "/login";
@@ -194,17 +212,18 @@ export default function AdminDashboard() {
     }
   };
 
-  // 🔥 LOAD
+  // 🔥 FIRST LOAD
   useEffect(() => {
-    fetchData();
+    fetchData(true);
   }, []);
 
-  // 🔥 AUTO LIVE REFRESH
+  // 🔥 LIVE REFRESH
   useEffect(() => {
 
-    const interval = setInterval(() => {
-      fetchData();
-    }, 15000);
+    const interval =
+      setInterval(() => {
+        fetchData(false);
+      }, 15000);
 
     return () =>
       clearInterval(interval);
@@ -212,22 +231,34 @@ export default function AdminDashboard() {
   }, []);
 
   // 🔥 EDIT PACKAGE
-  const handleEdit = (pkg: any) => {
+  const handleEdit = (
+    pkg: any
+  ) => {
 
     setForm({
       title: pkg.title,
       description: pkg.description,
       price: pkg.price,
-      flight_name: pkg.flight_name,
-      flight_from: pkg.flight_from,
-      flight_to: pkg.flight_to,
-      departure_date: pkg.departure_date,
-      return_date: pkg.return_date,
-      hotel_name: pkg.hotel_name,
-      hotel_rating: pkg.hotel_rating,
-      category: pkg.category,
-      duration_days: pkg.duration_days,
-      total_slots: pkg.total_slots,
+      flight_name:
+        pkg.flight_name,
+      flight_from:
+        pkg.flight_from,
+      flight_to:
+        pkg.flight_to,
+      departure_date:
+        pkg.departure_date,
+      return_date:
+        pkg.return_date,
+      hotel_name:
+        pkg.hotel_name,
+      hotel_rating:
+        pkg.hotel_rating,
+      category:
+        pkg.category,
+      duration_days:
+        pkg.duration_days,
+      total_slots:
+        pkg.total_slots,
     });
 
     setEditingId(pkg.id);
@@ -240,13 +271,14 @@ export default function AdminDashboard() {
     });
   };
 
-  // 🔥 MENU
+  // 🔥 MENUS
   const menus = [
     {
       id: "dashboard",
       label: "Dashboard",
       icon: LayoutDashboard,
-      count: analytics.total_bookings,
+      count:
+        analytics.total_bookings,
     },
 
     {
@@ -279,47 +311,41 @@ export default function AdminDashboard() {
   ];
 
   // 🔥 RECENT BOOKINGS
-  const recentBookings = useMemo(() => {
+  const recentBookings =
+    useMemo(() => {
 
-    return bookings
-      ?.slice(0, 5);
+      return bookings.slice(0, 5);
 
-  }, [bookings]);
+    }, [bookings]);
 
   return (
     <div className="flex min-h-screen bg-[#040816] text-white overflow-hidden">
 
-      {/* 🔥 PREMIUM BACKGROUND */}
+      {/* 🔥 BACKGROUND */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
 
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-yellow-500/10 blur-[140px]" />
 
         <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-yellow-300/10 blur-[140px]" />
 
-        <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-blue-500/10 blur-[120px]" />
-
       </div>
 
       {/* 🔥 MOBILE SIDEBAR */}
       {mobileOpen && (
-
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-2xl md:hidden">
 
           <div className="w-72 h-full bg-[#0B1120] border-r border-white/10 p-6">
 
-            {/* TOP */}
             <div className="flex justify-between items-center mb-10">
 
               <div>
-
                 <h1 className="text-2xl font-black text-yellow-400">
                   M.Y HAMDALA
                 </h1>
 
                 <p className="text-xs text-gray-500">
-                  Travel ERP System
+                  Travel ERP
                 </p>
-
               </div>
 
               <button
@@ -332,12 +358,12 @@ export default function AdminDashboard() {
 
             </div>
 
-            {/* NAV */}
             <nav className="space-y-3">
 
               {menus.map((item) => {
 
-                const Icon = item.icon;
+                const Icon =
+                  item.icon;
 
                 return (
                   <button
@@ -361,7 +387,7 @@ export default function AdminDashboard() {
 
                     </div>
 
-                    <span className="text-xs opacity-70">
+                    <span className="text-xs">
                       {item.count}
                     </span>
 
@@ -374,44 +400,38 @@ export default function AdminDashboard() {
           </div>
 
         </div>
-
       )}
 
       {/* 🔥 DESKTOP SIDEBAR */}
       <aside className="hidden md:flex w-80 bg-white/[0.03] backdrop-blur-3xl border-r border-white/10 flex-col justify-between p-6">
 
-        {/* TOP */}
         <div>
 
           {/* LOGO */}
-          <div className="mb-10">
+          <div className="mb-10 flex items-center gap-4">
 
-            <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-3xl bg-yellow-500 flex items-center justify-center">
 
-              <div className="w-16 h-16 rounded-3xl bg-yellow-500 flex items-center justify-center shadow-2xl">
+              <Plane className="text-black" />
 
-                <Plane className="text-black" />
+            </div>
 
-              </div>
+            <div>
 
-              <div>
+              <h1 className="text-3xl font-black text-yellow-400">
+                M.Y HAMDALA
+              </h1>
 
-                <h1 className="text-3xl font-black text-yellow-400">
-                  M.Y HAMDALA
-                </h1>
-
-                <p className="text-gray-500 text-sm">
-                  Travel ERP System
-                </p>
-
-              </div>
+              <p className="text-gray-500 text-sm">
+                Travel ERP System
+              </p>
 
             </div>
 
           </div>
 
-          {/* ADMIN CARD */}
-          <div className="bg-gradient-to-br from-yellow-500/10 to-yellow-300/5 border border-yellow-500/20 rounded-[28px] p-5 mb-10">
+          {/* ADMIN */}
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-3xl p-5 mb-10">
 
             <div className="flex items-center gap-4">
 
@@ -421,11 +441,11 @@ export default function AdminDashboard() {
 
               <div>
 
-                <h2 className="font-bold text-lg">
+                <h2 className="font-bold">
                   Administrator
                 </h2>
 
-                <p className="text-gray-400 text-sm">
+                <p className="text-sm text-gray-400">
                   Super Admin
                 </p>
 
@@ -443,12 +463,13 @@ export default function AdminDashboard() {
 
           </div>
 
-          {/* NAV */}
+          {/* NAVIGATION */}
           <nav className="space-y-3">
 
             {menus.map((item) => {
 
-              const Icon = item.icon;
+              const Icon =
+                item.icon;
 
               return (
                 <button
@@ -456,9 +477,9 @@ export default function AdminDashboard() {
                   onClick={() =>
                     setTab(item.id)
                   }
-                  className={`group w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all duration-300 ${
+                  className={`w-full flex items-center justify-between px-5 py-4 rounded-2xl transition-all ${
                     tab === item.id
-                      ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black shadow-2xl"
+                      ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black"
                       : "hover:bg-white/10 text-gray-300"
                   }`}
                 >
@@ -467,23 +488,13 @@ export default function AdminDashboard() {
 
                     <Icon size={20} />
 
-                    <span className="font-medium">
-                      {item.label}
-                    </span>
+                    {item.label}
 
                   </div>
 
-                  <div className="flex items-center gap-3">
-
-                    <span className="text-xs opacity-70">
-                      {item.count}
-                    </span>
-
-                    <span className="opacity-40 group-hover:translate-x-1 transition">
-                      →
-                    </span>
-
-                  </div>
+                  <span className="text-xs">
+                    {item.count}
+                  </span>
 
                 </button>
               );
@@ -496,7 +507,6 @@ export default function AdminDashboard() {
         {/* BOTTOM */}
         <div>
 
-          {/* SYSTEM */}
           <div className="bg-green-500/10 border border-green-500/20 rounded-3xl p-5 mb-5">
 
             <div className="flex items-center gap-3">
@@ -510,7 +520,7 @@ export default function AdminDashboard() {
                 </p>
 
                 <p className="text-xs text-gray-400">
-                  Live travel operations active
+                  Live Operations Active
                 </p>
 
               </div>
@@ -519,10 +529,9 @@ export default function AdminDashboard() {
 
           </div>
 
-          {/* LOGOUT */}
           <button
             onClick={handleLogout}
-            className="w-full bg-red-500 hover:bg-red-600 transition-all py-4 rounded-2xl font-semibold flex items-center justify-center gap-2"
+            className="w-full bg-red-500 hover:bg-red-600 py-4 rounded-2xl font-semibold flex items-center justify-center gap-2"
           >
 
             <LogOut size={18} />
@@ -530,10 +539,6 @@ export default function AdminDashboard() {
             Logout
 
           </button>
-
-          <p className="text-center text-xs text-gray-500 mt-6">
-            ©️ {new Date().getFullYear()} M.Y HAMDALA
-          </p>
 
         </div>
 
@@ -543,18 +548,17 @@ export default function AdminDashboard() {
       <main className="flex-1 overflow-auto">
 
         {/* 🔥 TOPBAR */}
-        <div className="sticky top-0 z-30 bg-[#050816]/70 backdrop-blur-2xl border-b border-white/10 px-5 md:px-10 py-5">
+        <div className="sticky top-0 z-30 bg-[#050816]/80 backdrop-blur-2xl border-b border-white/10 px-5 md:px-10 py-5">
 
           <div className="flex items-center justify-between gap-4">
 
-            {/* LEFT */}
             <div className="flex items-center gap-4">
 
               <button
+                className="md:hidden"
                 onClick={() =>
                   setMobileOpen(true)
                 }
-                className="md:hidden"
               >
                 <Menu />
               </button>
@@ -566,14 +570,13 @@ export default function AdminDashboard() {
                 </h1>
 
                 <p className="text-sm text-gray-400">
-                  Live premium travel management
+                  Premium Admin Dashboard
                 </p>
 
               </div>
 
             </div>
 
-            {/* RIGHT */}
             <div className="flex items-center gap-4">
 
               {/* SEARCH */}
@@ -593,8 +596,10 @@ export default function AdminDashboard() {
 
               {/* REFRESH */}
               <button
-                onClick={fetchData}
-                className="bg-yellow-500 hover:bg-yellow-400 text-black px-5 py-3 rounded-2xl font-semibold flex items-center gap-2 transition-all"
+                onClick={() =>
+                  fetchData(false)
+                }
+                className="bg-yellow-500 hover:bg-yellow-400 text-black px-5 py-3 rounded-2xl font-semibold flex items-center gap-2"
               >
 
                 <RefreshCw size={18} />
@@ -604,7 +609,7 @@ export default function AdminDashboard() {
               </button>
 
               {/* NOTIFICATION */}
-              <button className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10">
+              <button className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
 
                 <Bell size={18} />
 
@@ -621,117 +626,64 @@ export default function AdminDashboard() {
 
           {loading ? (
 
-            <div className="flex flex-col items-center justify-center h-[70vh]">
+            <div className="flex items-center justify-center h-[70vh]">
 
               <div className="w-16 h-16 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin" />
-
-              <p className="mt-5 text-gray-400">
-                Loading premium dashboard...
-              </p>
 
             </div>
 
           ) : (
 
             <>
-
-              {/* 🔥 QUICK LIVE OVERVIEW */}
+              {/* 🔥 QUICK STATS */}
               <div className="grid md:grid-cols-4 gap-5 mb-10">
 
-                <div className="bg-[#121826] border border-white/10 rounded-3xl p-5">
+                <div className="bg-[#121826] rounded-3xl border border-white/10 p-5">
+                  <p className="text-sm text-gray-400">
+                    Packages
+                  </p>
 
-                  <div className="flex justify-between">
-
-                    <div>
-
-                      <p className="text-gray-400 text-sm">
-                        Packages
-                      </p>
-
-                      <h2 className="text-4xl font-black mt-2">
-                        {packages.length}
-                      </h2>
-
-                    </div>
-
-                    <Package className="text-yellow-400" />
-
-                  </div>
-
+                  <h2 className="text-4xl font-black mt-2">
+                    {packages.length}
+                  </h2>
                 </div>
 
-                <div className="bg-[#121826] border border-white/10 rounded-3xl p-5">
+                <div className="bg-[#121826] rounded-3xl border border-white/10 p-5">
+                  <p className="text-sm text-gray-400">
+                    Users
+                  </p>
 
-                  <div className="flex justify-between">
-
-                    <div>
-
-                      <p className="text-gray-400 text-sm">
-                        Users
-                      </p>
-
-                      <h2 className="text-4xl font-black mt-2">
-                        {users.length}
-                      </h2>
-
-                    </div>
-
-                    <Users className="text-blue-400" />
-
-                  </div>
-
+                  <h2 className="text-4xl font-black mt-2">
+                    {users.length}
+                  </h2>
                 </div>
 
-                <div className="bg-[#121826] border border-white/10 rounded-3xl p-5">
+                <div className="bg-[#121826] rounded-3xl border border-white/10 p-5">
+                  <p className="text-sm text-gray-400">
+                    Payments
+                  </p>
 
-                  <div className="flex justify-between">
-
-                    <div>
-
-                      <p className="text-gray-400 text-sm">
-                        Payments
-                      </p>
-
-                      <h2 className="text-4xl font-black mt-2">
-                        {payments.length}
-                      </h2>
-
-                    </div>
-
-                    <CreditCard className="text-green-400" />
-
-                  </div>
-
+                  <h2 className="text-4xl font-black mt-2">
+                    {payments.length}
+                  </h2>
                 </div>
 
-                <div className="bg-[#121826] border border-white/10 rounded-3xl p-5">
+                <div className="bg-[#121826] rounded-3xl border border-white/10 p-5">
+                  <p className="text-sm text-gray-400">
+                    Revenue
+                  </p>
 
-                  <div className="flex justify-between">
-
-                    <div>
-
-                      <p className="text-gray-400 text-sm">
-                        Revenue
-                      </p>
-
-                      <h2 className="text-3xl font-black mt-2 text-yellow-400">
-                        ₦
-                        {Number(
-                          analytics.revenue
-                        ).toLocaleString()}
-                      </h2>
-
-                    </div>
-
-                    <DollarSign className="text-yellow-400" />
-
-                  </div>
-
+                  <h2 className="text-3xl font-black mt-2 text-yellow-400">
+                    ₦
+                    {Number(
+                      analytics.revenue
+                    ).toLocaleString()}
+                  </h2>
                 </div>
 
               </div>
 
-              {/* 🔥 DASHBOARD */}
+              {/* DASHBOARD */}
               {tab === "dashboard" && (
                 <div className="space-y-8">
 
@@ -739,8 +691,8 @@ export default function AdminDashboard() {
                     analytics={analytics}
                   />
 
-                  {/* 🔥 RECENT BOOKINGS */}
-                  <div className="bg-[#121826] border border-white/10 rounded-[32px] p-6">
+                  {/* RECENT BOOKINGS */}
+                  <div className="bg-[#121826] border border-white/10 rounded-3xl p-6">
 
                     <div className="flex items-center justify-between mb-6">
 
@@ -751,7 +703,7 @@ export default function AdminDashboard() {
                         </h2>
 
                         <p className="text-gray-400 text-sm">
-                          Latest customer activities
+                          Latest activities
                         </p>
 
                       </div>
@@ -764,20 +716,15 @@ export default function AdminDashboard() {
 
                       {recentBookings.map(
                         (b: any) => (
-
                           <div
                             key={b.id}
-                            className="flex items-center justify-between bg-black/20 rounded-2xl p-4 border border-white/5"
+                            className="flex items-center justify-between bg-black/20 rounded-2xl p-4"
                           >
 
                             <div className="flex items-center gap-4">
 
                               <div className="w-12 h-12 rounded-2xl bg-yellow-500 text-black flex items-center justify-center font-black">
-                                {
-                                  b.first_name?.charAt(
-                                    0
-                                  )
-                                }
+                                {b.first_name?.charAt(0)}
                               </div>
 
                               <div>
@@ -788,9 +735,7 @@ export default function AdminDashboard() {
                                 </h3>
 
                                 <p className="text-sm text-gray-400">
-                                  {
-                                    b.passport_number
-                                  }
+                                  {b.passport_number}
                                 </p>
 
                               </div>
@@ -799,8 +744,7 @@ export default function AdminDashboard() {
 
                             <div
                               className={`px-3 py-1 rounded-full text-xs ${
-                                b.status ===
-                                "paid"
+                                b.status === "paid"
                                   ? "bg-green-500/20 text-green-400"
                                   : "bg-yellow-500/20 text-yellow-400"
                               }`}
@@ -809,7 +753,6 @@ export default function AdminDashboard() {
                             </div>
 
                           </div>
-
                         )
                       )}
 
@@ -820,12 +763,14 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              {/* 🔥 PACKAGES */}
+              {/* PACKAGES */}
               {tab === "packages" && (
                 <div className="space-y-8">
 
                   <CreatePackage
-                    onCreated={fetchData}
+                    onCreated={() =>
+                      fetchData(false)
+                    }
                     form={form}
                     setForm={setForm}
                     editingId={editingId}
@@ -834,32 +779,33 @@ export default function AdminDashboard() {
 
                   <PackageList
                     packages={packages}
-                    refresh={fetchData}
+                    refresh={() =>
+                      fetchData(false)
+                    }
                     onEdit={handleEdit}
                   />
 
                 </div>
               )}
 
-              {/* 🔥 BOOKINGS */}
+              {/* BOOKINGS */}
               {tab === "bookings" && (
                 <BookingList
                   bookings={bookings}
                 />
               )}
 
-              {/* 🔥 USERS */}
+              {/* USERS */}
               {tab === "users" && (
                 <UserList users={users} />
               )}
 
-              {/* 🔥 PAYMENTS */}
+              {/* PAYMENTS */}
               {tab === "payments" && (
                 <PaymentList
                   payments={payments}
                 />
               )}
-
             </>
 
           )}
