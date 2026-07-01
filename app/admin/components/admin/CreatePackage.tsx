@@ -13,6 +13,7 @@ import {
   Trash2,
   Sparkles,
 } from "lucide-react";
+import API from "@/lib/api";
 
 export default function CreatePackage({
   onCreated,
@@ -118,20 +119,16 @@ export default function CreatePackage({
         formData.append("file", images[0]);
       }
 
-      const res = await fetch(
-        "https://travel-backend-oo52.onrender.com/api/v1/admin/packages",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+     const res = await API.post("/admin/packages", formData, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "multipart/form-data",
+  },
+});
 
-      const data = await res.json();
+      const data = res.data;
 
-      if (!res.ok) {
+      if (!res.status || res.status >= 400) {
         alert(data?.detail || "Creation failed");
         return;
       }

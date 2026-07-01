@@ -2,13 +2,13 @@ import axios from "axios";
 
 // 🔥 BASE CONFIG
 const API = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://travel-backend-oo52.onrender.com/api/v1",
+  baseURL:
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://travel-backend-production-f6ae.up.railway.app/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: false, // change to true only if using cookies
 });
-
 // 🔐 REQUEST INTERCEPTOR (Attach Token)
 API.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {

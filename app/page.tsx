@@ -99,7 +99,7 @@ const getBotReply = (input: string) => {
   ]);
   const [input, setInput] = useState("");
 
-  const BASE_URL = "https://travel-backend-oo52.onrender.com";
+ const BASE_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 const getImage = (path: string | null) => {
   if (!path) return "/images/makkah.jpg";
@@ -107,7 +107,7 @@ const getImage = (path: string | null) => {
   if (path.startsWith("http")) return path;
 
   // ❌ REMOVE 127.0.0.1
-  return `https://travel-backend-oo52.onrender.com${path}`;
+ return `${process.env.NEXT_PUBLIC_BACKEND_URL}${path}`;
 };
   const t = {
     en: {

@@ -25,7 +25,7 @@ export default function PackageList({
 
     if (path.startsWith("http")) return path;
 
-    return `https://travel-backend-oo52.onrender.com${path}`;
+   return `${process.env.NEXT_PUBLIC_BACKEND_URL}${path}`;
   };
 
   // 🔥 DELETE

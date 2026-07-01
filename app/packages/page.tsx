@@ -81,7 +81,7 @@ export default function PackagesPage() {
             {/* 🖼️ IMAGE */}
             {pkg.image_url && (
               <img
-                src={`https://travel-backend-oo52.onrender.com${pkg.image_url}`}
+              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${pkg.image_url}`}
                 className="w-full h-40 object-cover rounded-lg mb-4"
               />
             )}
