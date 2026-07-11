@@ -247,6 +247,16 @@ export default function EmergencyContact() {
 
     </div>
 
+    {errors.email && (
+
+      <p className="mt-2 text-sm text-red-600">
+
+        {errors.email}
+
+      </p>
+
+    )}
+
   </div>
 
 </div>

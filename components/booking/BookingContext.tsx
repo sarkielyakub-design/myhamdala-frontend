@@ -31,9 +31,11 @@ interface PassportData {
 }
 
 interface EmergencyData {
+  [x: string]: string | number | readonly string[] | undefined;
   name: string;
   relationship: string;
   phone: string;
+  email: string;
   address: string;
 }
 
@@ -107,6 +109,7 @@ const defaultBooking: BookingData = {
     name: "",
     relationship: "",
     phone: "",
+    email: "",
     address: "",
   },
 };
