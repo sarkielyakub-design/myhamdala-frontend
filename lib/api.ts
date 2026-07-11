@@ -313,6 +313,34 @@ export async function getUsers() {
   }
 
 }
+export async function getBookingById(id: string) {
+  try {
+    const response = await API.get(`/bookings/${id}`);
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+export async function getNewsById(id: string) {
+  try {
+    const response = await API.get(`/admin/news/${id}`);
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+export async function getUser(id: string) {
+  try {
+    const response = await API.get(`/admin/users/${id}`);
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 
 
 export default API;
