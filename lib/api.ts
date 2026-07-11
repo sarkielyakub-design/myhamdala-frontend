@@ -161,9 +161,9 @@ export async function getHero() {
 /* =====================================
    PACKAGES
 ===================================== */
-export async function getPackages(id: string) {
+export async function getPackages() {
   try {
-    const response = await API.get(`/packages/${id}`);
+    const response = await API.get("/packages/");
 
     return response.data;
 
@@ -331,7 +331,9 @@ export async function getNewsById(id: string) {
     return null;
   }
 }
-export async function getUser(id: string) {
+export async function getUser(
+  id: string | number
+) {
   try {
     const response = await API.get(`/admin/users/${id}`);
     return response.data.data;
@@ -340,7 +342,6 @@ export async function getUser(id: string) {
     return null;
   }
 }
-
 
 
 export default API;

@@ -15,9 +15,16 @@ import {
 } from "lucide-react";
 import NewsEditor from "./NewsEditor";
 
-export default function NewsForm() {
-  const [featured, setFeatured] = useState(false);
+interface Props {
+  article?: any;
+}
 
+export default function NewsForm({
+  article,
+}: Props) {
+  const [featured, setFeatured] = useState(
+    article?.featured ?? false
+  );
   return (
     <form className="space-y-8">
 
@@ -46,12 +53,11 @@ export default function NewsForm() {
             <label className="mb-2 block text-sm text-slate-400">
               Title
             </label>
-
-            <input
-              className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
-              placeholder="Saudi Arabia Announces New Umrah Rules"
-            />
-
+<input
+  defaultValue={article?.title ?? ""}
+  className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
+  placeholder="Saudi Arabia Announces New Umrah Rules"
+/>
           </div>
 
           <div>
@@ -60,11 +66,11 @@ export default function NewsForm() {
               Slug
             </label>
 
-            <input
-              className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
-              placeholder="saudi-arabia-announces-new-umrah-rules"
-            />
-
+  <input
+  defaultValue={article?.slug ?? ""}
+  className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
+  placeholder="saudi-arabia-announces-new-umrah-rules"
+/>
           </div>
 
         </div>
@@ -76,10 +82,11 @@ export default function NewsForm() {
           </label>
 
           <textarea
-            rows={4}
-            className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
-            placeholder="Brief summary shown on the News page..."
-          />
+  rows={4}
+  defaultValue={article?.excerpt ?? ""}
+  className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
+  placeholder="Brief summary shown on the News page..."
+/>
 
         </div>
 
@@ -100,14 +107,12 @@ export default function NewsForm() {
           </h2>
 
         </div>
-
-        <textarea
-          rows={18}
-          className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white"
-          placeholder="Write the full article here...
-
-(TipTap editor will replace this textarea later.)"
-        />
+<textarea
+  rows={18}
+  defaultValue={article?.content ?? ""}
+  className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-6 text-white"
+  placeholder="Write the full article here..."
+/>
 
       </section>
 
