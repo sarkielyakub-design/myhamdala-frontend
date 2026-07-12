@@ -165,11 +165,13 @@ export async function getPackages() {
   try {
     const response = await API.get("/packages/");
 
-    return response.data;
+    console.log("PACKAGES:");
+    console.log(response.data);
 
+    return response.data.data;
   } catch (error) {
     console.error(error);
-    return null;
+    return [];
   }
 }
 /* =====================================
