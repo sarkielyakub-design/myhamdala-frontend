@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import {
   Save,
   ImagePlus,
-  FolderOpen,
-  Tag,
   Star,
-  FileText,
   Type,
 } from "lucide-react";
 
@@ -22,29 +19,52 @@ export default function GalleryForm({
 
   const [form, setForm] = useState({
     title: image?.title || "",
-    description: image?.description || "",
-    category: image?.category || "",
-    alt_text: image?.alt_text || "",
-    tags: image?.tags || "",
+    category: image?.category || "General",
     featured: image?.featured || false,
+    active: image?.active ?? true,
   });
+
+  const [file, setFile] =
+    useState<File | null>(null);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [preview, setPreview] =
+    useState(image?.image_url || "");
+
+  const imagePreview = useMemo(() => {
+
+    if (file) {
+      return URL.createObjectURL(file);
+    }
+
+    return preview;
+
+  }, [file, preview]);
 
   return (
 
     <form className="space-y-8">
 
-      {/* Basic Information */}
+      {/* ========================================= */}
+      {/* Gallery Information */}
+      {/* ========================================= */}
 
       <section className="rounded-3xl border border-white/10 bg-[#111827] p-8">
 
         <div className="mb-8">
 
           <h2 className="text-2xl font-black text-white">
+
             Gallery Information
+
           </h2>
 
           <p className="mt-2 text-slate-400">
-            Add information about this gallery image.
+
+            Upload and organize gallery images.
+
           </p>
 
         </div>
@@ -54,7 +74,9 @@ export default function GalleryForm({
           <div>
 
             <label className="mb-2 block text-sm text-slate-400">
-              Title
+
+              Image Title
+
             </label>
 
             <div className="relative">
@@ -66,14 +88,14 @@ export default function GalleryForm({
 
               <input
                 value={form.title}
-                onChange={(e)=>
+                onChange={(e) =>
                   setForm({
                     ...form,
-                    title:e.target.value,
+                    title: e.target.value,
                   })
                 }
-                className="w-full rounded-2xl border border-white/10 bg-[#0B1220] py-4 pl-12 pr-4 text-white"
-                placeholder="Image title"
+                placeholder="Enter image title"
+                className="w-full rounded-2xl border border-white/10 bg-[#0B1220] py-4 pl-12 pr-4 text-white outline-none focus:border-yellow-400"
               />
 
             </div>
@@ -83,46 +105,56 @@ export default function GalleryForm({
           <div>
 
             <label className="mb-2 block text-sm text-slate-400">
+
               Category
+
             </label>
 
             <select
               value={form.category}
-              onChange={(e)=>
+              onChange={(e) =>
                 setForm({
                   ...form,
-                  category:e.target.value,
+                  category: e.target.value,
                 })
               }
-              className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
+              className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white outline-none focus:border-yellow-400"
             >
 
-              <option value="">
-                Select Category
+              <option value="General">
+                General
               </option>
 
-              <option>
+              <option value="Hajj">
                 Hajj
               </option>
 
-              <option>
+              <option value="Umrah">
                 Umrah
               </option>
 
-              <option>
+              <option value="Visa">
+                Visa
+              </option>
+
+              <option value="Tours">
                 Tours
               </option>
 
-              <option>
+              <option value="Hotels">
+                Hotels
+              </option>
+
+              <option value="Flights">
+                Flights
+              </option>
+
+              <option value="Events">
                 Events
               </option>
 
-              <option>
+              <option value="Office">
                 Office
-              </option>
-
-              <option>
-                Customers
               </option>
 
             </select>
@@ -131,139 +163,293 @@ export default function GalleryForm({
 
         </div>
 
-        <div className="mt-6">
-
-          <label className="mb-2 block text-sm text-slate-400">
-            Description
-          </label>
-
-          <textarea
-            rows={5}
-            value={form.description}
-            onChange={(e)=>
-              setForm({
-                ...form,
-                description:e.target.value,
-              })
-            }
-            className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
-            placeholder="Describe this image..."
-          />
-
-        </div>
-
       </section>
 
-      {/* Upload */}
+      {/* ========================================= */}
+      {/* Upload Image */}
+      {/* ========================================= */}
 
-      <section className="rounded-3xl border-2 border-dashed border-yellow-500/30 bg-[#111827] p-12 text-center">
+      <section className="rounded-3xl border border-dashed border-yellow-500/40 bg-[#111827] p-8">
 
-        <ImagePlus
-          size={60}
-          className="mx-auto text-yellow-400"
-        />
-
-        <h2 className="mt-6 text-2xl font-bold text-white">
-          Upload Image
-        </h2>
-
-        <p className="mt-3 text-slate-400">
-          Drag & drop or choose an image.
-        </p>
-
-        <input
-          type="file"
-          className="mt-8"
-        />
-
-      </section>
-
-      {/* SEO */}
-
-      <section className="rounded-3xl border border-white/10 bg-[#111827] p-8">
-
-        <div className="mb-8 flex items-center gap-3">
-
-          <FileText className="text-green-400"/>
+        <div className="mb-8">
 
           <h2 className="text-2xl font-black text-white">
-            SEO Information
+
+            Upload Image
+
           </h2>
 
-        </div>
+          <p className="mt-2 text-slate-400">
 
-        <div className="space-y-6">
+            Upload a JPG, PNG or WEBP image.
 
-          <input
-            value={form.alt_text}
-            onChange={(e)=>
-              setForm({
-                ...form,
-                alt_text:e.target.value,
-              })
-            }
-            className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
-            placeholder="Alt Text"
-          />
-
-          <input
-            value={form.tags}
-            onChange={(e)=>
-              setForm({
-                ...form,
-                tags:e.target.value,
-              })
-            }
-            className="w-full rounded-2xl border border-white/10 bg-[#0B1220] p-4 text-white"
-            placeholder="Tags (comma separated)"
-          />
+          </p>
 
         </div>
 
-      </section>
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-3xl border-2 border-dashed border-yellow-500/30 bg-[#0B1220] p-10 transition hover:border-yellow-400">
 
-      {/* Featured */}
+          {imagePreview ? (
 
-      <section className="rounded-3xl border border-white/10 bg-[#111827] p-8">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="mb-6 h-72 w-full rounded-2xl object-cover"
+            />
 
-        <label className="flex items-center justify-between rounded-2xl bg-[#0B1220] p-5">
+          ) : (
 
-          <div className="flex items-center gap-3">
+            <ImagePlus
+              size={70}
+              className="mb-6 text-yellow-400"
+            />
 
-            <Star className="text-yellow-400"/>
+          )}
 
-            <span className="text-white">
-              Featured Image
-            </span>
+          <h3 className="text-xl font-bold text-white">
 
-          </div>
+            Click to Upload
+
+          </h3>
+
+          <p className="mt-2 text-slate-400">
+
+            PNG • JPG • WEBP
+
+          </p>
 
           <input
-            type="checkbox"
-            checked={form.featured}
-            onChange={()=>
-              setForm({
-                ...form,
-                featured:!form.featured,
-              })
-            }
+            hidden
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+
+              if (!e.target.files?.length)
+                return;
+
+              const selected =
+                e.target.files[0];
+
+              setFile(selected);
+
+              setPreview(
+                URL.createObjectURL(selected)
+              );
+
+            }}
           />
 
         </label>
 
+      </section>      {/* ========================================= */}
+      {/* Settings */}
+      {/* ========================================= */}
+
+      <section className="rounded-3xl border border-white/10 bg-[#111827] p-8">
+
+        <div className="mb-8">
+
+          <h2 className="text-2xl font-black text-white">
+            Gallery Settings
+          </h2>
+
+          <p className="mt-2 text-slate-400">
+            Configure how this gallery image appears on the website.
+          </p>
+
+        </div>
+
+        <div className="space-y-5">
+
+          {/* Featured */}
+
+          <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0B1220] p-5">
+
+            <div className="flex items-center gap-3">
+
+              <Star
+                size={20}
+                className="text-yellow-400"
+              />
+
+              <div>
+
+                <h3 className="font-semibold text-white">
+                  Featured Image
+                </h3>
+
+                <p className="text-sm text-slate-400">
+                  Display on homepage gallery.
+                </p>
+
+              </div>
+
+            </div>
+
+            <input
+              type="checkbox"
+              checked={form.featured}
+              onChange={() =>
+                setForm({
+                  ...form,
+                  featured: !form.featured,
+                })
+              }
+            />
+
+          </label>
+
+          {/* Active */}
+
+          <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0B1220] p-5">
+
+            <div>
+
+              <h3 className="font-semibold text-white">
+                Active
+              </h3>
+
+              <p className="text-sm text-slate-400">
+                Show this image on the public website.
+              </p>
+
+            </div>
+
+            <input
+              type="checkbox"
+              checked={form.active}
+              onChange={() =>
+                setForm({
+                  ...form,
+                  active: !form.active,
+                })
+              }
+            />
+
+          </label>
+
+        </div>
+
       </section>
 
+      {/* ========================================= */}
       {/* Save */}
+      {/* ========================================= */}
 
-      <button
-        className="flex items-center gap-3 rounded-2xl bg-yellow-400 px-10 py-4 font-bold text-black hover:bg-yellow-300"
-      >
+      <div className="flex justify-end">
 
-        <Save size={20}/>
+        <button
+          type="submit"
+          disabled={loading}
+          onClick={async (e) => {
 
-        Save Gallery Image
+            e.preventDefault();
 
-      </button>
+            if (!form.title.trim()) {
+              alert("Title is required.");
+              return;
+            }
+
+            if (!image && !file) {
+              alert("Please select an image.");
+              return;
+            }
+
+            try {
+
+              setLoading(true);
+
+              const formData = new FormData();
+
+              formData.append(
+                "title",
+                form.title
+              );
+
+              formData.append(
+                "category",
+                form.category
+              );
+
+              formData.append(
+                "featured",
+                String(form.featured)
+              );
+
+              formData.append(
+                "active",
+                String(form.active)
+              );
+
+              if (file) {
+                formData.append(
+                  "file",
+                  file
+                );
+              }
+
+              const token =
+                localStorage.getItem("token");
+
+              const url = image
+                ? `${process.env.NEXT_PUBLIC_API_URL}/gallery/${image.id}`
+                : `${process.env.NEXT_PUBLIC_API_URL}/gallery`;
+
+              const method = image
+                ? "PUT"
+                : "POST";
+
+              const response = await fetch(
+                url,
+                {
+                  method,
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: formData,
+                }
+              );
+
+              const result =
+                await response.json();
+
+              if (!response.ok) {
+                throw new Error(
+                  result.detail ||
+                  "Something went wrong."
+                );
+              }
+
+              alert(result.message);
+
+            } catch (error: any) {
+
+              alert(
+                error.message ||
+                "Failed to save gallery image."
+              );
+
+            } finally {
+
+              setLoading(false);
+
+            }
+
+          }}
+          className="flex items-center gap-3 rounded-2xl bg-yellow-400 px-10 py-4 font-bold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+
+          <Save size={20} />
+
+          {loading
+            ? "Saving..."
+            : image
+            ? "Update Gallery"
+            : "Save Gallery Image"}
+
+        </button>
+
+      </div>
 
     </form>
 
