@@ -19,15 +19,15 @@ export default function DashboardLayout({
       <Sidebar />
 
       {/* Main Content */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
 
-        {/* Header */}
+        {/* Desktop Header */}
         <Header />
 
-        {/* Page Content */}
-        <main className="flex-1 overflow-x-hidden overflow-y-auto">
+        {/* Page */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden">
 
-          <div className="mx-auto w-full max-w-[1700px] p-4 sm:p-6 lg:p-8">
+          <div className="mx-auto w-full max-w-7xl p-4 sm:p-6 lg:p-8">
 
             {children}
 

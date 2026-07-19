@@ -142,11 +142,31 @@ export default function Sidebar() {
   ========================== */}
 
   <aside
-  className={`fixed left-0 top-0 z-50 flex h-screen w-80 flex-shrink-0 flex-col border-r border-white/10 bg-[#07101F] overflow-y-auto transition-transform duration-300 md:static md:translate-x-0 ${
-    mobileOpen
-      ? "translate-x-0"
-      : "-translate-x-full"
-  }`}
+  className={`
+    fixed inset-y-0 left-0
+    z-50
+    flex
+    w-72
+    flex-col
+    border-r border-white/10
+    bg-[#07101F]
+    shadow-2xl
+    transition-transform
+    duration-300
+    overflow-y-auto
+
+    ${
+      mobileOpen
+        ? "translate-x-0"
+        : "-translate-x-full"
+    }
+
+    lg:translate-x-0
+    lg:sticky
+    lg:top-0
+    lg:h-screen
+    lg:flex-shrink-0
+  `}
 >
     <div>
 
