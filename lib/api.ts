@@ -182,7 +182,57 @@ export async function getPackages() {
 /* =====================================
    GALLERY
 ===================================== */
+export async function createGallery(
+  formData: FormData
+) {
+  const response = await API.post(
+    "/gallery/",
+    formData,
+    {
+      headers: {
+        "Content-Type":
+          "multipart/form-data",
+      },
+    }
+  );
 
+  return response.data;
+}
+export async function updateGallery(
+  id: number,
+  formData: FormData
+) {
+  const response = await API.put(
+    `/gallery/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type":
+          "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data;
+}
+export async function deleteGallery(
+  id: number
+) {
+  const response = await API.delete(
+    `/gallery/${id}`
+  );
+
+  return response.data;
+}
+export async function getGalleryById(
+  id: number
+) {
+  const response = await API.get(
+    `/gallery/${id}`
+  );
+
+  return response.data.data;
+}
 
 
 /* =====================================

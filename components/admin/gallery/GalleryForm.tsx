@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
+import {
+  createGallery,
+  updateGallery,
+} from "@/lib/api";
 import {
   Save,
   ImagePlus,
@@ -388,39 +391,36 @@ export default function GalleryForm({
                 );
               }
 
-              const token =
-                localStorage.getItem("token");
+             const token = localStorage.getItem("token");
 
-              const url = image
-                ? `${process.env.NEXT_PUBLIC_API_URL}/gallery/${image.id}`
-                : `${process.env.NEXT_PUBLIC_API_URL}/gallery`;
+const url = image
+  ? `${process.env.NEXT_PUBLIC_API_URL}/gallery/${image.id}`
+  : `${process.env.NEXT_PUBLIC_API_URL}/gallery/`; // <-- Added trailing slash
 
-              const method = image
-                ? "PUT"
-                : "POST";
+const method = image ? "PUT" : "POST";
 
-              const response = await fetch(
-                url,
-                {
-                  method,
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: formData,
-                }
-              );
+const response = await fetch(url, {
+  method,
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+  body: formData,
+  redirect: "follow",
+});
 
-              const result =
-                await response.json();
+const result = await response.json();
 
-              if (!response.ok) {
-                throw new Error(
-                  result.detail ||
-                  "Something went wrong."
-                );
-              }
+if (!response.ok) {
+  console.error(result);
 
-              alert(result.message);
+  throw new Error(
+    result.detail ||
+    result.message ||
+    "Failed to save gallery image."
+  );
+}
+
+alert(result.message || "Gallery saved successfully.");
 
             } catch (error: any) {
 
