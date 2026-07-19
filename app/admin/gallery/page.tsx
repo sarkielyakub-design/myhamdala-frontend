@@ -3,11 +3,11 @@ import GalleryStats from "@/components/admin/gallery/GalleryStats";
 import GalleryToolbar from "@/components/admin/gallery/GalleryToolbar";
 import GalleryGrid from "@/components/admin/gallery/GalleryGrid";
 
-import { getGallery } from "@/lib/api";
+import { getAdminGallery } from "@/lib/api";
 
 export default async function GalleryPage() {
 
-  const gallery = await getGallery();
+  const gallery = await getAdminGallery();
 
   return (
     <div className="space-y-8">

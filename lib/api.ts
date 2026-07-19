@@ -263,14 +263,23 @@ export async function deleteGallery(
 
   return response.data;
 }
-export async function getGalleryById(
-  id: number
-) {
-  const response = await API.get(
-    `/gallery/${id}`
-  );
+export async function getAdminGallery() {
+  try {
 
-  return response.data.data;
+    const response = await API.get("/admin/gallery/");
+
+    console.log("ADMIN GALLERY");
+    console.log(response.data);
+
+    return response.data.data;
+
+  } catch (error) {
+
+    console.error(error);
+
+    return [];
+
+  }
 }
 
 export async function getPublicGallery() {
