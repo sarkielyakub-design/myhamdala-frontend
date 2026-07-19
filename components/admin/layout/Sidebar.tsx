@@ -142,7 +142,7 @@ export default function Sidebar() {
   ========================== */}
 
   <aside
-  className={`fixed left-0 top-0 z-50 flex h-screen w-80 flex-col border-r border-white/10 bg-[#07101F] overflow-y-auto transition-transform duration-300 md:relative md:translate-x-0 ${
+  className={`fixed left-0 top-0 z-50 flex h-screen w-80 flex-shrink-0 flex-col border-r border-white/10 bg-[#07101F] overflow-y-auto transition-transform duration-300 md:static md:translate-x-0 ${
     mobileOpen
       ? "translate-x-0"
       : "-translate-x-full"
