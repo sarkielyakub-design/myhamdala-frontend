@@ -177,7 +177,46 @@ export async function getPackages() {
 /* =====================================
    NEWS
 ===================================== */
+export async function createNews(
+    formData: FormData
+){
+    const response = await API.post(
+        "/admin/news/",
+        formData,
+        {
+            headers:{
+                "Content-Type":"multipart/form-data"
+            }
+        }
+    );
 
+    return response.data;
+}
+export async function updateNews(
+    id:number,
+    formData:FormData
+){
+    const response = await API.put(
+        `/admin/news/${id}`,
+        formData,
+        {
+            headers:{
+                "Content-Type":"multipart/form-data"
+            }
+        }
+    );
+
+    return response.data;
+}
+export async function deleteNews(
+    id:number
+){
+    const response = await API.delete(
+        `/admin/news/${id}`
+    );
+
+    return response.data;
+}
 
 /* =====================================
    GALLERY
@@ -234,7 +273,20 @@ export async function getGalleryById(
   return response.data.data;
 }
 
+export async function getPublicGallery() {
+  try {
+    const response = await API.get("/gallery/public");
 
+    return response.data.data;
+
+  } catch (error) {
+
+    console.error(error);
+
+    return [];
+
+  }
+}
 /* =====================================
    SETTINGS
 ===================================== */
