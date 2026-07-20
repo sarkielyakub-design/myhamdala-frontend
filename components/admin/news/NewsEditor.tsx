@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -19,32 +21,73 @@ import {
   ImagePlus,
 } from "lucide-react";
 
-export default function NewsEditor() {
+interface NewsEditorProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export default function NewsEditor({
+  value,
+  onChange,
+}: NewsEditorProps) {
+
   const editor = useEditor({
+
     extensions: [
+
       StarterKit,
 
       Placeholder.configure({
+
         placeholder:
           "Start writing your article...",
+
       }),
 
       Link.configure({
+
         openOnClick: false,
+
       }),
 
       Image,
+
     ],
 
-    content: "",
+    content: value,
+
+    onUpdate({ editor }) {
+
+      onChange(
+        editor.getHTML()
+      );
+
+    },
+
   });
+
+  useEffect(() => {
+
+    if (!editor) return;
+
+    if (
+      value !== editor.getHTML()
+    ) {
+
+      editor.commands.setContent(
+        value || "",
+        {}
+      );
+
+    }
+
+  }, [value, editor]);
 
   if (!editor) return null;
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#111827]">
 
-      {/* Toolbar */}
+    <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#111827]">
 
       <div className="flex flex-wrap gap-2 border-b border-white/10 p-4">
 
@@ -71,9 +114,13 @@ export default function NewsEditor() {
         <button
           type="button"
           onClick={() =>
-            editor.chain().focus().toggleHeading({
-              level: 1,
-            }).run()
+            editor
+              .chain()
+              .focus()
+              .toggleHeading({
+                level: 1,
+              })
+              .run()
           }
           className="rounded-xl p-3 hover:bg-white/10"
         >
@@ -83,9 +130,13 @@ export default function NewsEditor() {
         <button
           type="button"
           onClick={() =>
-            editor.chain().focus().toggleHeading({
-              level: 2,
-            }).run()
+            editor
+              .chain()
+              .focus()
+              .toggleHeading({
+                level: 2,
+              })
+              .run()
           }
           className="rounded-xl p-3 hover:bg-white/10"
         >
@@ -95,7 +146,11 @@ export default function NewsEditor() {
         <button
           type="button"
           onClick={() =>
-            editor.chain().focus().toggleBulletList().run()
+            editor
+              .chain()
+              .focus()
+              .toggleBulletList()
+              .run()
           }
           className="rounded-xl p-3 hover:bg-white/10"
         >
@@ -105,7 +160,11 @@ export default function NewsEditor() {
         <button
           type="button"
           onClick={() =>
-            editor.chain().focus().toggleOrderedList().run()
+            editor
+              .chain()
+              .focus()
+              .toggleOrderedList()
+              .run()
           }
           className="rounded-xl p-3 hover:bg-white/10"
         >
@@ -114,6 +173,23 @@ export default function NewsEditor() {
 
         <button
           type="button"
+          onClick={() => {
+
+            const url = prompt(
+              "Enter URL"
+            );
+
+            if (!url) return;
+
+            editor
+              .chain()
+              .focus()
+              .setLink({
+                href: url,
+              })
+              .run();
+
+          }}
           className="rounded-xl p-3 hover:bg-white/10"
         >
           <Link2 size={18} />
@@ -121,6 +197,23 @@ export default function NewsEditor() {
 
         <button
           type="button"
+          onClick={() => {
+
+            const url = prompt(
+              "Enter Image URL"
+            );
+
+            if (!url) return;
+
+            editor
+              .chain()
+              .focus()
+              .setImage({
+                src: url,
+              })
+              .run();
+
+          }}
           className="rounded-xl p-3 hover:bg-white/10"
         >
           <ImagePlus size={18} />
@@ -148,13 +241,13 @@ export default function NewsEditor() {
 
       </div>
 
-      {/* Editor */}
-
       <EditorContent
         editor={editor}
-        className="min-h-[500px] p-6 text-white focus:outline-none"
+        className="min-h-[500px] p-6 text-white"
       />
 
     </div>
+
   );
+
 }

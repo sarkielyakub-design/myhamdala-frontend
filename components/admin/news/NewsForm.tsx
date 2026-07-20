@@ -1,115 +1,60 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { createNews, updateNews } from "@/lib/api";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import {
+  FileText,
+  ImagePlus,
+  Loader2,
   Save,
   Send,
-  ImagePlus,
-  Tag,
-  FileText,
 } from "lucide-react";
 
 import NewsEditor from "./NewsEditor";
 
-interface Props {
+import {
+  createNews,
+  updateNews,
+} from "@/lib/api";
+
+interface NewsFormProps {
   article?: any;
 }
 
 export default function NewsForm({
   article,
-}: Props) {
-  const [title, setTitle] = useState(
-    article?.title ?? ""
-  );
+}: NewsFormProps) {
 
-  const [slug, setSlug] = useState(
-    article?.slug ?? ""
-  );
+  const router = useRouter();
 
-  const [excerpt, setExcerpt] = useState(
-    article?.excerpt ?? ""
-  );
+  const [loading, setLoading] =
+    useState(false);
 
-  const [category, setCategory] = useState(
-    article?.category ?? "Travel News"
-  );
+  const [title, setTitle] =
+    useState(article?.title ?? "");
 
-  const [tags, setTags] = useState(
-    article?.tags ?? ""
-  );
+  const [summary, setSummary] =
+    useState(article?.summary ?? "");
 
-  const [featured, setFeatured] = useState(
-    article?.featured ?? false
-  );
+  const [content, setContent] =
+    useState(article?.content ?? "");
+
+  const [category, setCategory] =
+    useState(article?.category ?? "General");
+
+  const [featured, setFeatured] =
+    useState(article?.featured ?? false);
+
+  const [published, setPublished] =
+    useState(article?.published ?? true);
 
   const [image, setImage] =
     useState<File | null>(null);
 
-  const [preview, setPreview] = useState(
-    article?.image ?? ""
-  );
-const [loading, setLoading] = useState(false);
-  // ==========================
-  // AUTO SLUG
-  // ==========================
+  const [preview] =
+    useState(article?.image_url ?? "");
 
-  useEffect(() => {
-    if (article?.slug) return;
-
-    const generated = title
-      .toLowerCase()
-      .trim()
-      .replace(/[^\w\s-]/g, "")
-      .replace(/\s+/g, "-")
-      .replace(/--+/g, "-");
-
-    setSlug(generated);
-
-  }, [title, article]);
-
-  // ==========================
-  // IMAGE PREVIEW
-  // ==========================
-async function handleSubmit(
-  e: React.FormEvent<HTMLFormElement>
-) {
-  e.preventDefault();
-
-  try {
-    setLoading(true);
-
-    const formData = new FormData();
-
-    formData.append("title", title);
-    formData.append("slug", slug);
-    formData.append("excerpt", excerpt);
-    formData.append("category", category);
-    formData.append("tags", tags);
-    formData.append(
-      "featured",
-      String(featured)
-    );
-
-    if (image) {
-      formData.append("file", image);
-    }
-
-    if (article?.id) {
-      await updateNews(article.id, formData);
-      alert("News updated successfully.");
-    } else {
-      await createNews(formData);
-      alert("News created successfully.");
-    }
-
-  } catch (error) {
-    console.error(error);
-    alert("Failed to save news.");
-  } finally {
-    setLoading(false);
-  }
-}
   const imagePreview = useMemo(() => {
 
     if (image) {
@@ -120,11 +65,104 @@ async function handleSubmit(
 
   }, [image, preview]);
 
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>
+  ) {
+
+    e.preventDefault();
+
+    if (!title.trim()) {
+      alert("Title is required.");
+      return;
+    }
+
+    if (!content.trim()) {
+      alert("Content is required.");
+      return;
+    }
+
+    try {
+
+      setLoading(true);
+
+      const formData = new FormData();
+
+      formData.append(
+        "title",
+        title
+      );
+
+      formData.append(
+        "summary",
+        summary
+      );
+
+      formData.append(
+        "content",
+        content
+      );
+
+      formData.append(
+        "category",
+        category
+      );
+
+      formData.append(
+        "featured",
+        String(featured)
+      );
+
+      formData.append(
+        "published",
+        String(published)
+      );
+
+      if (image) {
+        formData.append(
+          "file",
+          image
+        );
+      }
+
+      if (article?.id) {
+
+        await updateNews(
+          article.id,
+          formData
+        );
+
+      } else {
+
+        await createNews(
+          formData
+        );
+
+      }
+
+      router.push("/admin/news");
+
+      router.refresh();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert("Failed to save news article.");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
   return (
 
-    <form className="space-y-8">
-
-      {/* ================================================= */}
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-8"
+    >      {/* ================================================= */}
       {/* PAGE HEADER                                       */}
       {/* ================================================= */}
 
@@ -145,7 +183,7 @@ async function handleSubmit(
             <p className="mt-2 text-slate-400">
 
               Publish travel updates, visa announcements,
-              Hajj, Umrah and company news.
+              Hajj, Umrah, promotions and company news.
 
             </p>
 
@@ -190,7 +228,7 @@ async function handleSubmit(
 
             <p className="text-slate-400">
 
-              Basic information about this article.
+              Enter the basic details for this news article.
 
             </p>
 
@@ -198,7 +236,7 @@ async function handleSubmit(
 
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-6">
 
           <div>
 
@@ -209,12 +247,14 @@ async function handleSubmit(
             </label>
 
             <input
+              type="text"
               value={title}
               onChange={(e) =>
                 setTitle(e.target.value)
               }
-              placeholder="Saudi Arabia Announces New Umrah Rules"
+              placeholder="Enter article title..."
               className="w-full rounded-2xl border border-white/10 bg-[#0B1220] px-5 py-4 text-white outline-none transition focus:border-yellow-400"
+              required
             />
 
           </div>
@@ -223,76 +263,21 @@ async function handleSubmit(
 
             <label className="mb-2 block text-sm font-medium text-slate-300">
 
-              URL Slug
+              Summary
 
             </label>
 
-            <input
-              value={slug}
+            <textarea
+              rows={5}
+              value={summary}
               onChange={(e) =>
-                setSlug(e.target.value)
+                setSummary(e.target.value)
               }
+              placeholder="Write a short summary..."
               className="w-full rounded-2xl border border-white/10 bg-[#0B1220] px-5 py-4 text-white outline-none transition focus:border-yellow-400"
             />
 
           </div>
-
-        </div>
-
-        <div className="mt-6">
-
-          <label className="mb-2 block text-sm font-medium text-slate-300">
-
-            Short Summary
-
-          </label>
-
-          <textarea
-            rows={5}
-            value={excerpt}
-            onChange={(e) =>
-              setExcerpt(e.target.value)
-            }
-            placeholder="Write a short summary for this article..."
-            className="w-full rounded-2xl border border-white/10 bg-[#0B1220] px-5 py-4 text-white outline-none transition focus:border-yellow-400"
-          />
-
-        </div>
-
-      </section>
-
-      {/* ================================================= */}
-      {/* CATEGORY & TAGS                                  */}
-      {/* ================================================= */}
-
-      <section className="rounded-3xl border border-white/10 bg-[#111827] p-8">
-
-        <div className="mb-8 flex items-center gap-3">
-
-          <Tag
-            className="text-yellow-400"
-            size={24}
-          />
-
-          <div>
-
-            <h2 className="text-2xl font-bold text-white">
-
-              Category & Tags
-
-            </h2>
-
-            <p className="text-slate-400">
-
-              Organize your article.
-
-            </p>
-
-          </div>
-
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-2">
 
           <div>
 
@@ -310,59 +295,69 @@ async function handleSubmit(
               className="w-full rounded-2xl border border-white/10 bg-[#0B1220] px-5 py-4 text-white"
             >
 
-              <option>Travel News</option>
-              <option>Hajj</option>
-              <option>Umrah</option>
-              <option>Visa</option>
-              <option>Promotion</option>
-              <option>Company News</option>
+              <option value="General">
+                General
+              </option>
+
+              <option value="Travel News">
+                Travel News
+              </option>
+
+              <option value="Hajj">
+                Hajj
+              </option>
+
+              <option value="Umrah">
+                Umrah
+              </option>
+
+              <option value="Visa">
+                Visa
+              </option>
+
+              <option value="Promotion">
+                Promotion
+              </option>
+
+              <option value="Announcement">
+                Announcement
+              </option>
 
             </select>
-
-          </div>
-
-          <div>
-
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-
-              Tags
-
-            </label>
-
-            <input
-              value={tags}
-              onChange={(e) =>
-                setTags(e.target.value)
-              }
-              placeholder="Hajj, Saudi Arabia, Visa"
-              className="w-full rounded-2xl border border-white/10 bg-[#0B1220] px-5 py-4 text-white outline-none transition focus:border-yellow-400"
-            />
 
           </div>
 
         </div>
 
       </section>
-
-      {/* ================================================= */}
+            {/* ================================================= */}
       {/* FEATURED IMAGE                                   */}
       {/* ================================================= */}
 
       <section className="rounded-3xl border border-white/10 bg-[#111827] p-8">
 
-        <div className="mb-8">
+        <div className="mb-8 flex items-center gap-3">
 
-          <h2 className="text-2xl font-bold text-white">
+          <ImagePlus
+            size={26}
+            className="text-yellow-400"
+          />
 
-            Featured Image
+          <div>
 
-          </h2>
+            <h2 className="text-2xl font-bold text-white">
 
-          <p className="mt-2 text-slate-400">
+              Featured Image
 
-            Upload the image that will appear on the news page.
+            </h2>
 
-          </p>
+            <p className="text-slate-400">
+
+              Upload the image that will appear with this news article.
+
+            </p>
+
+          </div>
 
         </div>
 
@@ -373,7 +368,7 @@ async function handleSubmit(
             <img
               src={imagePreview}
               alt="Preview"
-              className="mb-6 h-72 w-full rounded-2xl object-cover"
+              className="mb-6 h-80 w-full rounded-2xl object-cover"
             />
 
           ) : (
@@ -393,7 +388,7 @@ async function handleSubmit(
 
           <p className="mt-2 text-slate-400">
 
-            PNG, JPG or WEBP • Max 5MB
+            PNG, JPG, JPEG or WEBP
 
           </p>
 
@@ -402,15 +397,21 @@ async function handleSubmit(
             hidden
             accept="image/*"
             onChange={(e) => {
-              if (e.target.files?.length) {
-                setImage(e.target.files[0]);
-              }
+
+              if (!e.target.files?.length) return;
+
+              setImage(
+                e.target.files[0]
+              );
+
             }}
           />
 
         </label>
 
-      </section>      {/* ================================================= */}
+      </section>
+
+      {/* ================================================= */}
       {/* ARTICLE CONTENT                                  */}
       {/* ================================================= */}
 
@@ -441,12 +442,14 @@ async function handleSubmit(
 
         </div>
 
-        <NewsEditor />
-
+       <NewsEditor
+    value={content}
+    onChange={setContent}
+/>
       </section>
 
       {/* ================================================= */}
-      {/* PUBLISHING                                       */}
+      {/* PUBLISHING OPTIONS                               */}
       {/* ================================================= */}
 
       <section className="rounded-3xl border border-white/10 bg-[#111827] p-8">
@@ -455,90 +458,59 @@ async function handleSubmit(
 
           <h2 className="text-2xl font-bold text-white">
 
-            Publishing
+            Publishing Options
 
           </h2>
 
           <p className="mt-2 text-slate-400">
 
-            Configure how this article will appear.
+            Configure how this article will be published.
 
           </p>
 
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-6 lg:grid-cols-2">
 
-          <div>
+          <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0B1220] p-5">
 
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <span className="text-white">
 
-              Status
+              Publish Article
 
-            </label>
-
-            <select className="w-full rounded-2xl border border-white/10 bg-[#0B1220] px-5 py-4 text-white">
-
-              <option value="draft">
-                Draft
-              </option>
-
-              <option value="published">
-                Published
-              </option>
-
-            </select>
-
-          </div>
-
-          <div>
-
-            <label className="mb-2 block text-sm font-medium text-slate-300">
-
-              Publish Date
-
-            </label>
+            </span>
 
             <input
-              type="datetime-local"
-              className="w-full rounded-2xl border border-white/10 bg-[#0B1220] px-5 py-4 text-white"
+              type="checkbox"
+              checked={published}
+              onChange={() =>
+                setPublished(!published)
+              }
             />
 
-          </div>
+          </label>
 
-          <div>
+          <label className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0B1220] p-5">
 
-            <label className="mb-2 block text-sm font-medium text-slate-300">
+            <span className="text-white">
 
-              Featured
+              Featured Article
 
-            </label>
+            </span>
 
-            <label className="flex h-[58px] items-center justify-between rounded-2xl border border-white/10 bg-[#0B1220] px-5">
+            <input
+              type="checkbox"
+              checked={featured}
+              onChange={() =>
+                setFeatured(!featured)
+              }
+            />
 
-              <span className="text-white">
-
-                Show on Homepage
-
-              </span>
-
-              <input
-                type="checkbox"
-                checked={featured}
-                onChange={() =>
-                  setFeatured(!featured)
-                }
-              />
-
-            </label>
-
-          </div>
+          </label>
 
         </div>
 
-      </section>
-
-      {/* ================================================= */}
+      </section>      {/* ================================================= */}
       {/* LIVE PREVIEW                                     */}
       {/* ================================================= */}
 
@@ -556,13 +528,13 @@ async function handleSubmit(
 
             <img
               src={imagePreview}
-              className="h-72 w-full object-cover"
-              alt=""
+              alt={title}
+              className="h-80 w-full object-cover"
             />
 
           ) : (
 
-            <div className="flex h-72 items-center justify-center text-slate-500">
+            <div className="flex h-80 items-center justify-center text-slate-500">
 
               No Image Selected
 
@@ -584,10 +556,9 @@ async function handleSubmit(
 
             </h2>
 
-            <p className="mt-4 text-slate-400">
+            <p className="mt-4 whitespace-pre-line text-slate-400">
 
-              {excerpt ||
-                "Your article summary will appear here..."}
+              {summary || "Article summary will appear here..."}
 
             </p>
 
@@ -605,23 +576,47 @@ async function handleSubmit(
 
         <button
           type="button"
-          className="flex items-center gap-2 rounded-2xl border border-white/10 px-8 py-4 font-semibold text-white transition hover:bg-white/10"
+          onClick={() => router.back()}
+          disabled={loading}
+          className="flex items-center gap-2 rounded-2xl border border-white/10 px-8 py-4 font-semibold text-white transition hover:bg-white/10 disabled:opacity-50"
         >
 
           <Save size={20} />
 
-          Save Draft
+          Cancel
 
         </button>
 
         <button
           type="submit"
-          className="flex items-center gap-2 rounded-2xl bg-yellow-400 px-10 py-4 font-bold text-black transition hover:bg-yellow-300"
+          disabled={loading}
+          className="flex items-center gap-2 rounded-2xl bg-yellow-400 px-10 py-4 font-bold text-black transition hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-70"
         >
 
-          <Send size={20} />
+          {loading ? (
 
-          Publish Article
+            <>
+              <Loader2
+                size={20}
+                className="animate-spin"
+              />
+
+              Saving...
+
+            </>
+
+          ) : (
+
+            <>
+              <Send size={20} />
+
+              {article
+                ? "Update Article"
+                : "Publish Article"}
+
+            </>
+
+          )}
 
         </button>
 
@@ -630,4 +625,5 @@ async function handleSubmit(
     </form>
 
   );
+
 }

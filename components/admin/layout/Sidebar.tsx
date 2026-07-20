@@ -132,7 +132,7 @@ export default function Sidebar() {
 
     <div
       onClick={closeDrawer}
-      className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+      className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
     />
 
   )}
@@ -143,17 +143,28 @@ export default function Sidebar() {
 
   <aside
   className={`
-    fixed inset-y-0 left-0
+    fixed
+    inset-y-0
+    left-0
     z-50
+
     flex
-    w-72
     flex-col
-    border-r border-white/10
+
+    h-screen
+    w-[85vw]
+    max-w-[320px]
+
     bg-[#07101F]
+    border-r
+    border-white/10
+
     shadow-2xl
+
+    transform
     transition-transform
     duration-300
-    overflow-y-auto
+    ease-in-out
 
     ${
       mobileOpen
@@ -161,11 +172,10 @@ export default function Sidebar() {
         : "-translate-x-full"
     }
 
+    md:w-72
     lg:translate-x-0
-    lg:sticky
-    lg:top-0
+    lg:static
     lg:h-screen
-    lg:flex-shrink-0
   `}
 >
     <div>
