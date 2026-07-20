@@ -143,40 +143,25 @@ export default function Sidebar() {
 
   <aside
   className={`
-    fixed
-    inset-y-0
-    left-0
-    z-50
+fixed inset-y-0 left-0 z-50
+flex flex-col
 
-    flex
-    flex-col
+h-screen
+w-[85vw]
+max-w-[320px]
 
-    h-screen
-    w-[85vw]
-    max-w-[320px]
+border-r border-white/10
+bg-[#07101F]
+shadow-2xl
 
-    bg-[#07101F]
-    border-r
-    border-white/10
+transform transition-transform duration-300 ease-in-out
 
-    shadow-2xl
+${mobileOpen ? "translate-x-0" : "-translate-x-full"}
 
-    transform
-    transition-transform
-    duration-300
-    ease-in-out
-
-    ${
-      mobileOpen
-        ? "translate-x-0"
-        : "-translate-x-full"
-    }
-
-    md:w-72
-    lg:translate-x-0
-    lg:static
-    lg:h-screen
-  `}
+lg:translate-x-0
+lg:w-72
+lg:shrink-0
+`}
 >
     <div>
 

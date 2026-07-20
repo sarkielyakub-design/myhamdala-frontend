@@ -2,7 +2,6 @@
 
 import { useMemo } from "react";
 import { usePathname } from "next/navigation";
-
 import {
   Search,
   Bell,
@@ -44,32 +43,23 @@ export default function Header() {
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-white/10 bg-[#07101F]/95 backdrop-blur-xl">
-
-      <div className="flex items-center justify-between px-4 py-4 md:px-8 md:py-5">
-
+    <header className="sticky top-0 z-30 hidden lg:block border-b border-white/10 bg-[#07101F]/95 backdrop-blur-xl">
+      <div className="flex h-20 items-center justify-between px-8">
         {/* Left */}
-
         <div>
-
-          <h1 className="text-xl font-black text-white md:text-3xl">
+          <h1 className="text-3xl font-black text-white">
             {title}
           </h1>
 
-          <p className="mt-1 hidden text-sm text-slate-400 md:block">
+          <p className="mt-1 text-sm text-slate-400">
             Welcome back, Administrator
           </p>
-
         </div>
 
         {/* Right */}
-
-        <div className="flex items-center gap-2 md:gap-5">
-
+        <div className="flex items-center gap-5">
           {/* Search */}
-
-          <div className="relative hidden xl:block">
-
+          <div className="relative">
             <Search
               size={18}
               className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
@@ -78,47 +68,34 @@ export default function Header() {
             <input
               type="text"
               placeholder="Search..."
-              className="w-80 rounded-2xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-white outline-none placeholder:text-slate-500 focus:border-yellow-400"
+              className="w-80 rounded-2xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-white outline-none transition focus:border-yellow-400"
             />
-
           </div>
 
           {/* Refresh */}
-
           <button
             onClick={() => window.location.reload()}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-yellow-400 px-3 py-3 font-semibold text-black transition hover:bg-yellow-300 md:px-5"
+            className="flex items-center gap-2 rounded-2xl bg-yellow-400 px-5 py-3 font-semibold text-black transition hover:bg-yellow-300"
           >
-
             <RefreshCw size={18} />
-
-            <span className="hidden lg:block">
-              Refresh
-            </span>
-
+            Refresh
           </button>
 
           {/* Notifications */}
-
-          <button className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 md:h-12 md:w-12">
-
-            <Bell size={20} className="text-white" />
+          <button className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 transition hover:bg-white/10">
+            <Bell size={20} />
 
             <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500" />
-
           </button>
 
           {/* Profile */}
-
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-2 py-2 md:px-4">
-
+          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-2">
             <UserCircle2
-              size={38}
+              size={40}
               className="text-yellow-400"
             />
 
-            <div className="hidden lg:block">
-
+            <div>
               <p className="font-semibold text-white">
                 Administrator
               </p>
@@ -126,15 +103,10 @@ export default function Header() {
               <p className="text-xs text-slate-400">
                 Super Admin
               </p>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </header>
   );
 }
