@@ -7,11 +7,10 @@ import GalleryHero from "@/components/gallery/GalleryHero";
 import GalleryFilter from "@/components/gallery/GalleryFilter";
 import GalleryGrid from "@/components/gallery/GalleryGrid";
 
-import { getGallery } from "@/lib/api";
+import { getPublicGallery } from "@/lib/api";
 
 export default async function GalleryPage() {
-
-  const gallery = await getGallery();
+  const gallery = await getPublicGallery();
 
   return (
     <>

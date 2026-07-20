@@ -225,29 +225,28 @@ export async function createGallery(
   formData: FormData
 ) {
   const response = await API.post(
-    "/gallery/",
+    "/admin/gallery/",
     formData,
     {
       headers: {
-        "Content-Type":
-          "multipart/form-data",
+        "Content-Type": "multipart/form-data",
       },
     }
   );
 
   return response.data;
 }
+
 export async function updateGallery(
   id: number,
   formData: FormData
 ) {
   const response = await API.put(
-    `/gallery/${id}`,
+    `/admin/gallery/${id}`,
     formData,
     {
       headers: {
-        "Content-Type":
-          "multipart/form-data",
+        "Content-Type": "multipart/form-data",
       },
     }
   );
@@ -258,7 +257,7 @@ export async function deleteGallery(
   id: number
 ) {
   const response = await API.delete(
-    `/gallery/${id}`
+    `/admin/gallery/${id}`
   );
 
   return response.data;
@@ -351,21 +350,7 @@ export async function getNewsArticle(
 
   }
 }
-export async function getGallery() {
-  try {
 
-    const response = await API.get("/gallery/");
-
-    return response.data.data;
-
-  } catch (error) {
-
-    console.error(error);
-
-    return [];
-
-  }
-}
 /* =====================================
    BOOKINGS
 ===================================== */
