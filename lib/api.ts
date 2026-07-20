@@ -175,52 +175,103 @@ export async function getPackages() {
   }
 }
 /* =====================================
-   NEWS
+   NEWS (ADMIN)
 ===================================== */
-export async function createNews(
-    formData: FormData
-){
-    const response = await API.post(
-        "/admin/news/",
-        formData,
-        {
-            headers:{
-                "Content-Type":"multipart/form-data"
-            }
-        }
-    );
 
-    return response.data;
+export async function createNews(formData: FormData) {
+  const response = await API.post(
+    "/admin/news/",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data;
 }
+
 export async function updateNews(
-    id:number,
-    formData:FormData
-){
-    const response = await API.put(
-        `/admin/news/${id}`,
-        formData,
-        {
-            headers:{
-                "Content-Type":"multipart/form-data"
-            }
-        }
-    );
+  id: number,
+  formData: FormData
+) {
+  const response = await API.put(
+    `/admin/news/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
-    return response.data;
+  return response.data;
 }
-export async function deleteNews(
-    id:number
-){
-    const response = await API.delete(
-        `/admin/news/${id}`
+
+export async function deleteNews(id: number) {
+  const response = await API.delete(
+    `/admin/news/${id}`
+  );
+
+  return response.data;
+}
+
+export async function getAdminNews() {
+  try {
+    const response = await API.get("/admin/news/");
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getNewsById(id: string | number) {
+  try {
+    const response = await API.get(
+      `/admin/news/${id}`
     );
 
-    return response.data;
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+export async function getNews() {
+  try {
+    const response = await API.get("/admin/news/");
+
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 }
 
 /* =====================================
-   GALLERY
+   NEWS (PUBLIC)
 ===================================== */
+
+export async function getNewsArticle(
+  slug: string
+) {
+  try {
+    const response = await API.get(
+      `/news/${slug}`
+    );
+
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+/* =====================================
+   GALLERY (ADMIN)
+===================================== */
+
 export async function createGallery(
   formData: FormData
 ) {
@@ -253,6 +304,7 @@ export async function updateGallery(
 
   return response.data;
 }
+
 export async function deleteGallery(
   id: number
 ) {
@@ -262,37 +314,77 @@ export async function deleteGallery(
 
   return response.data;
 }
+
 export async function getAdminGallery() {
   try {
-
-    const response = await API.get("/admin/gallery/");
-
-    console.log("ADMIN GALLERY");
-    console.log(response.data);
+    const response = await API.get(
+      "/admin/gallery/"
+    );
 
     return response.data.data;
-
   } catch (error) {
-
     console.error(error);
-
     return [];
-
   }
 }
 
-export async function getPublicGallery() {
+export async function getGalleryById(
+  id: number | string
+) {
   try {
-    const response = await API.get("/gallery/public");
+    const response = await API.get(
+      `/admin/gallery/${id}`
+    );
 
     return response.data.data;
-
   } catch (error) {
-
     console.error(error);
+    return null;
+  }
+}
 
+/* =====================================
+   GALLERY (PUBLIC)
+===================================== */
+
+export async function getPublicGallery() {
+  try {
+    const response = await API.get(
+      "/gallery/public"
+    );
+
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
     return [];
+  }
+}
 
+export async function getFeaturedGallery() {
+  try {
+    const response = await API.get(
+      "/gallery/public/featured"
+    );
+
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getGalleryByCategory(
+  category: string
+) {
+  try {
+    const response = await API.get(
+      `/gallery/public/category/${encodeURIComponent(category)}`
+    );
+
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 }
 /* =====================================
@@ -321,35 +413,7 @@ export async function getPackage(id: string) {
 
   }
 }
-export async function getNews() {
-  try {
-    const response = await API.get("/admin/news/");
 
-    return response.data.data;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
-export async function getNewsArticle(
-  slug: string
-) {
-  try {
-
-    const response = await API.get(
-      `/news/${slug}`
-    );
-
-    return response.data.data;
-
-  } catch (error) {
-
-    console.error(error);
-
-    return null;
-
-  }
-}
 
 /* =====================================
    BOOKINGS
@@ -420,15 +484,7 @@ export async function getBookingById(id: string) {
     return null;
   }
 }
-export async function getNewsById(id: string) {
-  try {
-    const response = await API.get(`/admin/news/${id}`);
-    return response.data.data;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
+
 export async function getUser(
   id: string | number
 ) {
