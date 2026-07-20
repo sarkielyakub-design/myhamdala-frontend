@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
+import { createNews, updateNews } from "@/lib/api";
 import {
   Save,
   Send,
@@ -49,7 +49,7 @@ export default function NewsForm({
   const [preview, setPreview] = useState(
     article?.image ?? ""
   );
-
+const [loading, setLoading] = useState(false);
   // ==========================
   // AUTO SLUG
   // ==========================
@@ -71,7 +71,45 @@ export default function NewsForm({
   // ==========================
   // IMAGE PREVIEW
   // ==========================
+async function handleSubmit(
+  e: React.FormEvent<HTMLFormElement>
+) {
+  e.preventDefault();
 
+  try {
+    setLoading(true);
+
+    const formData = new FormData();
+
+    formData.append("title", title);
+    formData.append("slug", slug);
+    formData.append("excerpt", excerpt);
+    formData.append("category", category);
+    formData.append("tags", tags);
+    formData.append(
+      "featured",
+      String(featured)
+    );
+
+    if (image) {
+      formData.append("file", image);
+    }
+
+    if (article?.id) {
+      await updateNews(article.id, formData);
+      alert("News updated successfully.");
+    } else {
+      await createNews(formData);
+      alert("News created successfully.");
+    }
+
+  } catch (error) {
+    console.error(error);
+    alert("Failed to save news.");
+  } finally {
+    setLoading(false);
+  }
+}
   const imagePreview = useMemo(() => {
 
     if (image) {
