@@ -10,9 +10,8 @@ import RelatedNews from "@/components/news/RelatedNews";
 
 import {
   getNewsArticle,
-  getNews,
+  getPublicNews,
 } from "@/lib/api";
-
 interface Props {
   params: {
     slug: string;
@@ -25,7 +24,7 @@ export default async function NewsDetailsPage({
 
   const article = await getNewsArticle(params.slug);
 
-  const allNews = await getNews();
+  const allNews = await getPublicNews();
 
   return (
     <>

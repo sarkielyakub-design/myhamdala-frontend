@@ -8,10 +8,10 @@ import NewsSearch from "@/components/news/NewsSearch";
 import NewsCategories from "@/components/news/NewsCategories";
 import NewsGrid from "@/components/news/NewsGrid";
 
-import { getNews } from "@/lib/api";
+import { getPublicNews } from "@/lib/api";
 
 export default async function NewsPage() {
-  const news = await getNews();
+  const news = await getPublicNews();
 
   return (
     <>

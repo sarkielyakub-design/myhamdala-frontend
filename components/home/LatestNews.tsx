@@ -11,7 +11,7 @@ import {
 interface News {
   id: number;
   title: string;
-  excerpt: string;
+ summary: string;
   content?: string;
   image_url: string;
   created_at: string;
@@ -174,7 +174,7 @@ export default function LatestNews({
                 "
               >
 
-                {article.title}
+               {article.summary}
 
               </h3>
 
@@ -187,7 +187,7 @@ export default function LatestNews({
                 "
               >
 
-                {article.excerpt}
+                {article.summary}
 
               </p>
 
