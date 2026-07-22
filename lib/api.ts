@@ -269,6 +269,36 @@ export async function getNewsArticle(
   }
 }
 /* =====================================
+   NEWS (PUBLIC)
+===================================== */
+
+export async function getPublicNews() {
+  try {
+    const response = await API.get("/news/public");
+
+    console.log("PUBLIC NEWS");
+    console.log(response.data);
+
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getLatestNews() {
+  try {
+    const response = await API.get("/news/public/latest");
+
+    return response.data.data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+
+/* =====================================
    GALLERY (ADMIN)
 ===================================== */
 
