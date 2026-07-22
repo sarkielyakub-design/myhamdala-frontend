@@ -132,7 +132,7 @@ export default function Sidebar() {
 
     <div
       onClick={closeDrawer}
-      className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+      className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm i:hidden"
     />
 
   )}
